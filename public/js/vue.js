@@ -1,7 +1,7 @@
 //import { text } from "body-parser";
 
-//axios.defaults.baseURL = 'http://192.168.1.110:3000';
-axios.defaults.baseURL = 'http://digiacesso-net.umbler.net/';
+axios.defaults.baseURL = 'http://192.168.1.110:3000';
+//axios.defaults.baseURL = 'http://digiacesso-net.umbler.net/';
 axios.defaults.withCredentials = true;
 
 function notifying () {
@@ -21,12 +21,12 @@ function notifying () {
     }
 }
 function dtBrFormat (obj) { // formata campo data para ser visualizado pelo usuário no formato BR
-  let yyyy = obj['date-time'].slice(0,4);
-  let mm = obj['date-time'].slice(4,6);
-  let dd = obj['date-time'].slice(6,8);
-  let hh = obj['date-time'].slice(8,10);
-  let mi = obj['date-time'].slice(10,12);
-  let ss = obj['date-time'].slice(12,14);
+  let yyyy = obj['datetime'].slice(4,8);
+  let mm = obj['datetime'].slice(2,4);
+  let dd = obj['datetime'].slice(0,2);
+  let hh = obj['datetime'].slice(8,10);
+  let mi = obj['datetime'].slice(10,12);
+  let ss = obj['datetime'].slice(12,14);
   obj.dtBR = dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + mi + ':' + ss;
   return obj;
 }
@@ -147,7 +147,7 @@ var app = new Vue({
         //mostra qrcode
         this.see.qrGuest = true;
         gerarQR(qr);
-        window.location.hash = '#canvas'; // get focus on canvas id
+        window.location.hash = '#qrguest'; // get focus on canvas id
       },
       loginCheck: async function () {
           const response = await axios.post('/auth', {username: this.login.username, password: this.login.password});

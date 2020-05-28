@@ -15,7 +15,7 @@
       <section class="hero is-primary">
         <div class="hero-body">
           <div class="container">
-            <h1 class="title"> Controllar.net </h1>
+            <h1 class="title"> _digiAcesso </h1>
             <h2 class="subtitle"> Acesso simples e seguro! </h2>
             <div class="login"><i class="fas fa-user"></i>
               &nbsp {{api.firstname}} <span v-if="showbtn"><a v-on:click='doLogout()'> - Sair</a></span>
@@ -110,14 +110,12 @@
                       <output for="sliderWithValue is-sucess">{{guest.hfinal}}:59</output>
                   </div>
                   <button class="button is-primary" v-on:click="addGuest()" >Salvar</button>
-                </div>
-                
+                </div>              
                 <div id="qrguest" v-if="see.qrGuest"> <!-- QR CODE do visitante-->
                   <br><strong> Um qrCode foi gerado!</strong>&nbsp; <span class="icon has-text-info" @click="see.qrGuest = false" ><i class="fas fa-window-close" title="Fechar QrCode"></i></span><br>
                   <canvas id="canvas"></canvas>
                   <div class="linkQR"> <a id="link" href="javascript:saveImage()">Salve a imagem </a> e envie para o visitante.<br>&nbsp</div>
                 </div>
-
                 <div class="table-container">
                   <div class="first-line guest"><div class="table-c"> Nome </div><div class="table-c"> Criado em </div><div class="table-c">Validade </div></div>
                   <div class="grid div-table-line guest" v-for="n in myguests" :key="n['dtcreated']">
@@ -143,7 +141,7 @@
               <h1 class="title">Registros de entrada e saída:</h1>
               <div class="table-container">
                     <div class="first-line"><div class="table-c"> Data </div><div class="table-c"> Nome </div><div class="table-c">Situação </div></div>
-                    <div class="grid div-table-line" v-for="n in access" :key="n['date-time']"><div class="table-c"> {{n.dtBR}} </div><div class="table-c"> {{n.firstname + " " + n.lastname}} </div><div class="table-c">{{n.stateBR}} </div></div>
+                    <div class="grid div-table-line" v-for="n in access" :key="n['date-time']"><div class="table-c"> {{n.dtBR}} </div><div class="table-c"> {{n.firstname}} </div><div class="table-c">{{n.stateBR}} </div></div>
               </div>
             </div>
           </div> <!-- Div container -->

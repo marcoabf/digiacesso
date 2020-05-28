@@ -1,6 +1,6 @@
-
-const mysql = require('mysql');
 var moment = require('moment'); 
+var randomstring = require('randomstring');
+const mysql = require('mysql2');
 var port = process.env.DB_PORT || 3306;
 const pool = mysql.createPool({
   connectionLimit : 10,
@@ -8,7 +8,6 @@ const pool = mysql.createPool({
   user     : 'masterdbuser',
   password : 'inspiron,25',
   database : 'digiacesso',
-  nestTables: '_',
   port: port
 });
 const axios = require('axios');
@@ -56,11 +55,13 @@ module.exports = {
    access(req, res){ // Mostra a lista de acessos
     console.log('Access');
     let userID = req.body.userID;
+    console.log(userID);
     let query = 'SELECT datetime, firstname, lastname, state ';
     query += ' FROM access, users, controllers  WHERE users.responsible=? ';
     query += ' AND users.id=access.userid AND access.controllerid=controllers.id ORDER BY datetime';
     pool.query(query, [userID], function (error, results, fields) {
       if (error) throw error;
+      console.log(results);
       if (results.length>0) res.send(results); else res.send("Sem registros de acesso!");
     });
    },
@@ -83,29 +84,24 @@ module.exports = {
     cArray = cHead.split("/");
     marca = cArray[0];
     serial = cArray[1];
-    var dt = moment(req.headers.date);
-    dt = moment(dt, "DD-MM-YYYY  HH:mm:ss");
-    if (req.query.request == "user") {
-      console.log("User");
-      let x = 0
-      while (serial.charAt(x)==='0'){ x+=1; }
-      serial = serial.slice(x,serial.length);
-    } // fim user
+    let x = 0
+    while (serial.charAt(x)==='0'){ x+=1; }
+    serial = serial.slice(x,serial.length);
+    console.log(serial);
     if (req.query.request == "qrcode") { 
-      //acesso via qrcode - padrao do qrcode: RESPONSIBLE-X-YYYY onde yyyy é um número aleatório e x é tipo de usuário
       console.log("QRcode");
       qrcode = req.query.qrcode;
-      qrArray = qrcode.split("-");
-      query = 'SELECT id FROM users WHERE qrcode=?';
-      pool.query(query, [qrcode], function (error, results, fields) {
+      console.log(qrcode);
+      pool.query("SELECT id FROM users WHERE qrcode = ?", [qrcode], function (error, results) {
         if (error) throw error;
+        console.log(results);
         idUser = (results.length>0) ? results[0].id : 0;
-      });
-
-      pool.query('INSERT INTO access("datetime", "controllerid", "userid", state, request) VALUES(?, ?, ?, ?, ?)', 
-      [dt, serial, idUser, req.query.state, req.query.request], (error, result) => {   
-        if (error) throw error;
-        console.log(result);
+        console.log('user: '+idUser);
+        query='INSERT INTO access(datetime, controllerid, userid, state, request) VALUES(?, ?, ?, ?, ?)';
+        pool.query(query, [req.query.time, serial, idUser, req.query.state, req.query.request], (error, result) => {   
+          if (error) throw error;
+          console.log(result);
+        }); 
       });
     } //fim qrCode
     res.status(200).end();
@@ -121,8 +117,9 @@ module.exports = {
   addGuest(req, res){
     //padrao do qrcode: userID-X-YYYY-Z onde YYYY é um número aleatório e X é tipo de usuário
     lifecount = req.body.lifecount;
-    qrcode = Math.floor((Math.random() * 10000) + 1);
-    qrcode = req.body.responsible + '-' + req.body.type +'-'+ qrcode;
+    //qrcode = Math.floor((Math.random() * 10000) + 1);
+    qrcode = randomstring.generate(6);
+    qrcode = req.body.responsible + ' ' + req.body.type +' '+ qrcode;
     let name = req.body.name;
     let validity = req.body.validity *60*60*24;
     let hIn = req.body.hinicial;
@@ -139,7 +136,7 @@ module.exports = {
     pool.query('SELECT * FROM users WHERE qrcode=?',[qrcode], function (error, result, fields) {
       if (error) throw error;
       repet = Number(result.length) + 1;
-      qrcode += '-' + repet; // cria um diferenciador caso exista um qrcode igual
+      qrcode += ' ' + repet; // cria um diferenciador caso exista um qrcode igual
       query = "INSERT INTO users (firstname, condoid, type, responsible, validity, perm, qrcode, dtcreated) ";
       query +=" VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
       pool.query(query,[name, req.body.condoid, req.body.type, req.body.responsible, validity, perm, qrcode, dtc], function (error, results, fields) {

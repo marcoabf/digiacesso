@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.19.2",
+    "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
     "bulma": "^0.8.2",
     "bulma-slider": "^2.0.0",
@@ -24,8 +25,10 @@
     "moment": "^2.26.0",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
+    "mysql2": "^2.1.0",
     "path": "^0.12.7",
     "qrcode": "^1.4.4",
+    "randomstring": "^1.1.5",
     "static-favicon": "^2.0.0-alpha",
     "vue": "^2.6.11"
   }
