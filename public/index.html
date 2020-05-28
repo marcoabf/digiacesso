@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ControlWeb</title>
+    <link rel="stylesheet" href="./node_modules/bulma/css/bulma.min.css"> 
+    <link rel="stylesheet" href="./node_modules/bulma-slider/dist/css/bulma-slider.min.css"> 
+    <link rel="stylesheet" href="./css/style.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  </head>
+  <!-- Iniciando -->
+  <body>
+    <div id="app">
+      <section class="hero is-primary">
+        <div class="hero-body">
+          <div class="container">
+            <h1 class="title"> Controllar.net </h1>
+            <h2 class="subtitle"> Acesso simples e seguro! </h2>
+            <div class="login"><i class="fas fa-user"></i>
+              &nbsp {{api.firstname}} <span v-if="showbtn"><a v-on:click='doLogout()'> - Sair</a></span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="section"> <!--Starting Section-->
+          <div class="container">
+            <div id="startPage" v-if="showbtn">
+              <button id="btn_user" class="button  is-medium" @click="seeOne('userPage')" >Usuário</button>
+              <button id="btn_guest" class="button is-medium" @click="mountGuests()" >Visitas</button>
+              <button class="button is-medium" @click="seeOne('openDoorPage')" >Abrir</button>
+              <button class="button is-medium" @click="regStart()" >Registros</button>
+              <br>
+            </div>  <!-- fim da start page-->
+            <div class="load" v-if="loading">
+              <div class="spinout"></div>
+                <div class="spin"></div>
+              
+              <div class="loading">Carregando</div>
+            </div>
+            <div id="login" v-if="see.loginPage"> <!-- --- login page -->
+              <h1 class="title">Entrada de usuário:</h1>
+              <div class="field">
+                <p class="control has-icons-left has-icons-right">
+                  <input id="login_first_input" class="input" type="text" placeholder="Nome de usuário" v-model="login.username">
+                  <span class="icon is-small is-left">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <span class="icon is-small is-right">
+                    <i class="fas fa-check"></i>
+                  </span>
+                </p>
+              </div>
+              <div class="field">
+                <p class="control has-icons-left">
+                  <input class="input" type="password" placeholder="Senha" v-model="login.password">
+                  <span class="icon is-small is-left">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                </p>
+              </div>
+              <div class="field">
+                <p class="control">
+                  <button class="button is-success" v-on:click="loginCheck()">
+                    Login
+                  </button>
+                </p>
+              </div>
+            </div> <!-- Div Login -->
+            <div id="user" v-if="see.userPage"> <!-- --- user page -->
+              <div class="table-container">
+                <h1 class="title">Seus dados:</h1>
+                <table class="table is-hoverable">
+                  <tr>
+                    <td><strong>Nome de usuário: </strong></td><td> {{api.username}} </td>
+                  </tr><tr>  
+                    <td><strong>Tipo: </strong></td><td> {{userType(api.type)}} </td>
+                  </tr><tr>      
+                    <td><strong>Nome completo:</strong></td><td>{{api.firstname + " " + api.lastname}} </td>
+                  </tr><tr> 
+                    <td><strong>Email:</strong></td><td>{{api.email}}</td>
+                  </tr><tr> 
+                    <td><strong>Condomínio:</strong></td><td>{{api.condoName}}</td>
+                  </tr>
+                </table>
+                <button class="button is-danger is-light" @click="this.alert('Ainda não é possível trocar a senha!')">Trocar Senha</button>
+              </div>
+            </div> <!-- Div user -->
+            <div id="guest" v-if="see.guestPage"> <!-- --- Guest Page -->
+              <h1 class="title">Visitantes cadastrados:</h1>
+              <button class="button is-primary" v-on:click="see.addGuest=!see.addGuest" >Novo Cadastro</button>
+                <div id="addguest" v-if="see.addGuest">
+                  <div class = "field">
+                      <label class="label">Nome</label>
+                      <input class="input" type="text" placeholder="Nome da visita" v-model="guest.name">
+                      <label class="label">Validade (dias)</label>
+                      <input class="slider has-output is-success is-medium" step="0" min="1" max="30" v-model="guest.validity" type="range">
+                      <output for="sliderWithValue">{{guest.validity}}</output>
+                      <label class="label">Liberar nos seguintes dias</label>
+                      <label class="radio">
+                        <input type="radio" name="days" value="0-6" v-model="guest.days" checked> Todos os dias</label><br>
+                        <input type="radio" name="days" value="1-5" v-model="guest.days"> Segunda a Sexta</label><br>
+                        <input type="radio" name="days" value="0" v-model="guest.days">Domingo</label><br>
+                        <input type="radio" name="days" value="6" v-model="guest.days">Sábado</label><br>
+                      </label>
+                      <label class="label">Horários permitidos:</label>
+                      <strong>Inicio &nbsp</strong><input class="slider is-yellow" step="1" min="0" max="23" v-model="guest.hinicial" type="range">
+                      <output for="sliderWithValue">{{guest.hinicial}}:00</output> &nbsp &nbsp &nbsp
+                      <br><strong>Fim &nbsp &nbsp </strong><input class="slider is-yellow" step="1" min="0" max="23" v-model="guest.hfinal" type="range">
+                      <output for="sliderWithValue is-sucess">{{guest.hfinal}}:59</output>
+                  </div>
+                  <button class="button is-primary" v-on:click="addGuest()" >Salvar</button>
+                </div>
+                
+                <div id="qrguest" v-if="see.qrGuest"> <!-- QR CODE do visitante-->
+                  <br><strong> Um qrCode foi gerado!</strong>&nbsp; <span class="icon has-text-info" @click="see.qrGuest = false" ><i class="fas fa-window-close" title="Fechar QrCode"></i></span><br>
+                  <canvas id="canvas"></canvas>
+                  <div class="linkQR"> <a id="link" href="javascript:saveImage()">Salve a imagem </a> e envie para o visitante.<br>&nbsp</div>
+                </div>
+
+                <div class="table-container">
+                  <div class="first-line guest"><div class="table-c"> Nome </div><div class="table-c"> Criado em </div><div class="table-c">Validade </div></div>
+                  <div class="grid div-table-line guest" v-for="n in myguests" :key="n['dtcreated']">
+                  <div class="table-c">
+                    <span class="icon has-text-info"><a  @click="showQR(n.qrcode)" ><i class="fas fa-qrcode" title="QrCode"></i></a></span> 
+                    <span class="icon has-text-link"><i class="fas fa-user-edit" title="Editar usuário"></i></span>
+                    <span class="icon has-text-danger"><i class="fas fa-trash" title="Excluir usuário"></i></span>
+                     &nbsp  {{n.firstname}} </div>
+                  <div class="table-c"> {{n.dtcreated | date2br(0,'dt') }} </div><div class="table-c">{{n.dtcreated | date2br(n.validity)}} </div></div>
+                </div>
+            </div> <!-- Div guest -->
+            <div id="opendoor" v-if="see.openDoorPage"> <!-- --- Open Door Page -->
+              <h1 class="title">Abertura remota de portas:</h1><br>
+              <div class="select">
+                <select id="controller" v-model="doorSelected">
+                  <option v-for="x in ctrl" :value="x.ctrlID" >{{x.ctrlName}}</option>
+                </select>
+              </div>
+              <span><button id="abrir" class="button is-warning is-small" @click="openDoor()" ><strong> ABRIR </strong></button></span>
+              <br>  <span>Selecione a porta que deseje abrir e aperte o botão.</span>
+            </div>
+            <div id="reg" v-if="see.regPage"> <!-- --- Register Page -->
+              <h1 class="title">Registros de entrada e saída:</h1>
+              <div class="table-container">
+                    <div class="first-line"><div class="table-c"> Data </div><div class="table-c"> Nome </div><div class="table-c">Situação </div></div>
+                    <div class="grid div-table-line" v-for="n in access" :key="n['date-time']"><div class="table-c"> {{n.dtBR}} </div><div class="table-c"> {{n.firstname + " " + n.lastname}} </div><div class="table-c">{{n.stateBR}} </div></div>
+              </div>
+            </div>
+          </div> <!-- Div container -->
+          <br>  
+          <div class="switch__container" v-if="false"> <!-- Div botão tipo switch -->
+            <input id="switch-bg" class="switch switch--bg" type="checkbox" />
+            <label for="switch-bg"></label>
+          </div>
+      </section>
+      <button class="button" @click="subscribe()">Notificação</button>
+    </div> <!--Fim APP--> 
+
+    
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p>
+          Entre em contato para criar um usuário.
+        </p>
+      </div>
+    </footer>
+    <script src="/node_modules/qrcode/build/qrcode.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment-with-locales.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+    <script src="/node_modules/vue/dist/vue.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> 
+    <script src="./js/webpush-client.js"></script>
+    <script src="./js/vue.js"></script>
+  </body>
+</html>
