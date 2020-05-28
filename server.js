@@ -5,9 +5,9 @@ var port = process.env.DB_PORT || 3306;
 const pool = mysql.createPool({
   connectionLimit : 10,
   host     : 'mysql669.umbler.com',
-  user     : 'dbmaster',
+  user     : 'masterdbuser',
   password : 'inspiron,25',
-  database : 'controlweb',
+  database : 'digiacesso',
   nestTables: '_',
   port: port
 });
