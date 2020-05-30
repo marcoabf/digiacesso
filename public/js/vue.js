@@ -1,7 +1,7 @@
 //import { text } from "body-parser";
 
 //axios.defaults.baseURL = 'http://192.168.1.110:3000';
-axios.defaults.baseURL = 'https://wwww.digiacesso.net';
+axios.defaults.baseURL = 'http://wwww.digiacesso.net';
 axios.defaults.withCredentials = true;
 
 function notifying () {
