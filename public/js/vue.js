@@ -3,7 +3,7 @@
 axios.defaults.baseURL = 'http://192.168.1.110:3000';
 axios.defaults.baseURL = 'https://digiacesso.net/';
 //axios.defaults.baseURL = 'http://digiacesso-net.umbler.net/';
-axios.defaults.withCredentials = true;
+//axios.defaults.withCredentials = true;
 
 function notifying () {
     /**
