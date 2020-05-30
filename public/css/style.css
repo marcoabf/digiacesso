@@ -57,6 +57,7 @@ body {
 }
 .div-table-line{
   display: grid;
+  margin-bottom: 5px;
   grid-template-columns: 130px 150px 120px;
   background-color: #ffffffe1;
   width: 400px;
@@ -64,7 +65,7 @@ body {
 .div-table-line::after {
   content: " ";
   width: 400px;
-  height: 2px;
+  height: 1px;
   background-color: green;
   display: flex;
   margin: 2px 1px;
@@ -72,6 +73,7 @@ body {
 .table-c {
   display: inline-block;
   vertical-align: middle;
+  padding-left: 5px;
 }
 
 @media screen and (min-width: 600px) {

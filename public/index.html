@@ -120,9 +120,9 @@
                   <div class="first-line guest"><div class="table-c"> Nome </div><div class="table-c"> Criado em </div><div class="table-c">Validade </div></div>
                   <div class="grid div-table-line guest" v-for="n in myguests" :key="n['dtcreated']">
                   <div class="table-c">
-                    <span class="icon has-text-info"><a  @click="showQR(n.qrcode)" ><i class="fas fa-qrcode" title="QrCode"></i></a></span> 
+                    <span class="icon"><a  @click="showQR(n.qrcode)" ><i class="fas fa-qrcode has-text-info" title="QrCode"></i></a></span> 
                     <span class="icon has-text-link"><i class="fas fa-user-edit" title="Editar usuário"></i></span>
-                    <span class="icon has-text-danger"><i class="fas fa-trash" title="Excluir usuário"></i></span>
+                    <span class="icon"><a  @click="delGuest(n.qrcode)"><i class="fas fa-trash has-text-danger" title="Excluir usuário"></i></a></span>
                      &nbsp  {{n.firstname}} </div>
                   <div class="table-c"> {{n.dtcreated | date2br(0,'dt') }} </div><div class="table-c">{{n.dtcreated | date2br(n.validity)}} </div></div>
                 </div>

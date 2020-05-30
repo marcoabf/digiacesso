@@ -41,6 +41,7 @@ app.post('/access', server.access);
 app.get('/dologout', server.doLogout);    // verifica o login e faz o logout do usuário
 app.post('/guests', server.guests);  //lista visitantes de um usuário 
 app.post('/addguest', server.addGuest);  //cadastra um visitante na leitora 
+app.post('/delguest', server.delGuest);
 app.post('/open', server.openDoor);
 app.get('/utech', server.utech); //recebe notificações da leitora
 

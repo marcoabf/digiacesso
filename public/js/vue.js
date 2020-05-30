@@ -1,7 +1,7 @@
 //import { text } from "body-parser";
 
-//axios.defaults.baseURL = 'http://192.168.1.110:3000';
-axios.defaults.baseURL = 'http://digiacesso-net.umbler.net/';
+axios.defaults.baseURL = 'http://192.168.1.110:3000';
+//axios.defaults.baseURL = 'https://wwww.digiacesso.net';
 axios.defaults.withCredentials = true;
 
 function notifying () {
@@ -201,6 +201,13 @@ var app = new Vue({
           console.log(response.data);
           this.see.addGuest=false;
           this.see.qrguest=true;
+        }
+      },
+      delGuest: async function (qr) {
+        const response = await axios.post('/delguest', {qrcode: qr}); //limit => num máximo de registros
+        console.log(response.data);
+        if (typeof response.data === "string") {
+          alert(response.data);
         }
       },
       openDoor: async function () { // gera requisição para abrir a porta

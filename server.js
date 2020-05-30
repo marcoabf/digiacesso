@@ -10,6 +10,7 @@ const pool = mysql.createPool({
   database : 'digiacesso',
   port: port
 });
+const promisePool = pool.promise();
 const axios = require('axios');
 //var row = [];
 
@@ -181,6 +182,32 @@ module.exports = {
       });
     });
   }, // fim do addGuest
+  async delGuest(req, res) {
+    console.log('delete');
+    const row1 = await promisePool.query('DELETE FROM users WHERE qrcode=?',[req.body.qrcode]);
+    console.log(row1);
+    controllerIp = '192.168.1.99';
+    authUser = 'admin';
+    authPass = 'admin';
+    console.log("antes da requisição utech...")
+    try {
+      const response = await axios.post('http://'+controllerIp+'/?request=deluser', {
+        qrcode: req.body.qrcode
+      },
+      { withCredentials: true,  
+        auth: {
+              username: authUser,
+              password: authPass
+              }
+      });
+      console.log("delete sent to utech");
+      console.log(response);
+      res.send("Dados excluídos com sucesso!");
+    } catch (error) {
+      console.error(error);
+    }
+    
+  },
   openDoor(req, res){ // comando para abrir porta
     ctrlId = req.body.ctrlID;
     pool.query("SELECT * FROM controllers WHERE id=?",[ctrlId], function (error, result) {
@@ -206,28 +233,4 @@ module.exports = {
 
 } // fim do export
 //-------------------------------------------------------------
-
-function deleteQrUser(qrcode){
-  query = "DELETE FROM users WHERE qrcode=?";
-  pool.query(query,[qrcode], function (error, results, fields) {
-    if (error) throw error; 
-    console.log(results);
-  });
-      
-}  
-function formatDate(dt) {
-  dia  = dt.getDate().toString();
-  mes  = (dt.getMonth()+1).toString(); //+1 pois no getMonth Janeiro começa com zero.
-  hora = dt.getHours().toString();
-  min = dt.getMinutes().toString(); 
-  seg = dt.getSeconds().toString();  
-  dd = (dia.length == 1) ? '0' + dia : dia;
-  mm = (mes.length == 1) ? '0' + mes : mes;
-  yyyy = dt.getFullYear();
-  hh = (hh>=3) ? hh-3 : hh + 24 - 3;
-  hh = (hora.length == 1) ? '0' + hora : hora;
-  mn = (min.length==1) ? '0' + min : min;
-  ss = (seg.length == 1) ? '0' + seg : seg;
-  dateTime = yyyy+mm+dd+hh+mn+ss;
-  return dateTime;
-}
+ 
