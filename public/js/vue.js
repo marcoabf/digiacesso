@@ -1,7 +1,7 @@
 //import { text } from "body-parser";
 //axios.defaults.baseURL = 'http://localhost:3000';
-axios.defaults.baseURL = 'http://192.168.1.109:3000';
-//axios.defaults.baseURL = 'https://digiacesso.net/';
+//axios.defaults.baseURL = 'http://192.168.1.109:3000';
+axios.defaults.baseURL = 'https://digiacesso.net/';
 //axios.defaults.baseURL = 'http://digiacesso-net.umbler.net/';
 axios.defaults.withCredentials = true;
 
