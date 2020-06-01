@@ -2,6 +2,7 @@ var moment = require('moment');
 var randomstring = require('randomstring');
 const mysql = require('mysql2');
 var port = process.env.DB_PORT || 3306;
+const webpush = require('web-push');
 const pool = mysql.createPool({
   connectionLimit : 10,
   host     : 'mysql669.umbler.com',
@@ -13,6 +14,45 @@ const pool = mysql.createPool({
 const promisePool = pool.promise();
 const axios = require('axios');
 //var row = [];
+const vapidKeys = {
+    publicKey:'BIwuuXK7vJ_QvxDTmOp-sLDkCRV8gZJst02gtPg5C4KhgqUoD9_UuY1T3yzacCqnSN6GGpx4WhKku_GX65T-rhA',
+    privateKey: 'pVfFaI0B9yPezKupI7LpRByiKqoN4i480HJae4UJiyw'
+  };
+webpush.setVapidDetails(
+    'mailto:mb@accontrol.com.br',
+    vapidKeys.publicKey,
+    vapidKeys.privateKey
+  );
+
+  const isValidSaveRequest = (req, res) => { // verifica se a requisição possui endpoint.
+    console.log(req.body.endpoint);
+    if (!req.body || !req.body.endpoint) {
+      // Not a valid subscription.
+      res.status(400);
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({
+        error: {
+          id: 'no-endpoint',
+          message: 'Subscription must have an endpoint.'
+        }
+      }));
+      return false; // retorna falso (não é uma requisição valida)
+    }
+    return true; // true: é uma requisição válida
+  };
+  
+  const triggerPushMsg = function(subscription, dataToSend) {
+    return webpush.sendNotification(subscription, dataToSend)
+    .catch((err) => {
+      if (err.statusCode === 404 || err.statusCode === 410) {
+        console.log('Sua inscrição expirou ou não é mais válida: ', err);
+        //return deleteSubscriptionFromDatabase(subscription._id);
+      } 
+      else {
+        throw err;
+      }
+    });
+  };
 
 module.exports = {
   //-----------------------------qLogin
@@ -229,8 +269,48 @@ module.exports = {
         res.send("Erro ao enviar requisição.");
       }); // axios.get
     });   //query
+  },
+  webPush(req, res) {
+    console.log("webpush:");
+    console.log(req.body);
+    if (!isValidSaveRequest(req, res)) {
+      return;
+    }
+    strBody = JSON.stringify(req.body);
+    query = "UPDATE users SET subscription=? WHERE id=?";
+    pool.query(query, [strBody, req.session.userid], function (error, results, fields) {
+      if (error) throw error;
+      console.log(results);
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({ success: true } )); 
+    });
+  },
+  sendTestNotification(req, res) {
+    query = 'SELECT * FROM users WHERE id=?';
+    pool.query(query, [req.session.userid], function (error, results) {
+      if (error) throw error;
+      if (results.length>0) {
+        let subscription = results[0].subscription;
+        let obj = JSON.parse(subscription);
+        delete obj.expirationTime;
+        subscription = JSON.stringify(obj);
+        console.log(subscription);
+        webpush.sendNotification(obj, 'Um visitante chegou!')
+          .catch((err) => {
+            if (err.statusCode === 404 || err.statusCode === 410) {
+              console.log('Subscription has expired or is no longer valid: ', err);
+              return deleteSubscriptionFromDatabase(subscription._id);
+            } else {
+              throw err;
+            }
+          });
+        res.send("Notificação enviada!");
+        return;
+      }
+    res.send("Usuário não encontrado!");
+    });
   }
 
 } // fim do export
 //-------------------------------------------------------------
- 
+

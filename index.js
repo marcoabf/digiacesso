@@ -44,6 +44,8 @@ app.post('/addguest', server.addGuest);  //cadastra um visitante na leitora
 app.post('/delguest', server.delGuest);
 app.post('/open', server.openDoor);
 app.get('/utech', server.utech); //recebe notificações da leitora
+app.post('/webpush', server.webPush); //recebe solicitação de notificação do navegador do cliente
+app.get('/sendtestnotification', server.sendTestNotification);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {

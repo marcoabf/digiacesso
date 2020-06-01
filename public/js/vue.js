@@ -1,26 +1,11 @@
 //import { text } from "body-parser";
-
-axios.defaults.baseURL = 'http://192.168.1.110:3000';
+//axios.defaults.baseURL = 'http://localhost:3000';
+//axios.defaults.baseURL = 'http://192.168.1.110:3000';
 axios.defaults.baseURL = 'https://digiacesso.net/';
 //axios.defaults.baseURL = 'http://digiacesso-net.umbler.net/';
 //axios.defaults.withCredentials = true;
 
-function notifying () {
-    /**
-     * Check Browser Notification Permission
-     */
-    var Notification = window.Notification || window.mozNotification || window.webkitNotification;
-    Notification.requestPermission(function (permission) {
-    });
-    // Verificando permissão para pedido de notificação do navegador 
-    function requestNotificationPermissions() 
-    {
-        if (Notification.permission !== 'denied') {
-            Notification.requestPermission(function (permission) {
-            });
-        }
-    }
-}
+
 function dtBrFormat (obj) { // formata campo data para ser visualizado pelo usuário no formato BR
   let yyyy = obj['datetime'].slice(4,8);
   let mm = obj['datetime'].slice(2,4);
@@ -142,7 +127,11 @@ var app = new Vue({
       },
       subscribe: function () { //web push notification
           // em desenvolvimento
-          notifying();
+          notifyMe();
+      },
+      testSubs: async function () { // ask for a test notification
+        const response = await axios.get('/sendtestnotification');
+        console.log(response.data);
       },
       showQR: function (qr) {
         //mostra qrcode
@@ -254,5 +243,83 @@ var app = new Vue({
       }
     }
   });
+
+  async function notifyMe() { //verifica se o navegador é compatível
+
+    if (!('serviceWorker' in navigator)) {
+      // Service Worker isn't supported on this browser, disable or hide UI.
+      console.log('Service worker não é suportado');
+      return;
+    } else { console.log('Service worker suportado!');}
+    
+    if (!('PushManager' in window)) {
+      // Push isn't supported on this browser, disable or hide UI.
+      console.log('Push não é suportado');
+      return;
+    } else {  console.log('Push é suportado');}
+  
+    // Let's check if the browser supports notifications
+    if (!("Notification" in window)) {
+      console.log("Esse navegador não suporta notificação");
+    }
+    // Let's check whether notification permissions have alredy been granted
+    else if (Notification.permission === "granted") {
+      // If it's okay let's create a notification
+      console.log("Esse navegador suporta notificação");
+      var notification = new Notification("Olá! Notificação teste!");
+    }
+    // Otherwise, we need to ask the user for permission
+    else if (Notification.permission !== 'denied' || Notification.permission === "default") {
+      Notification.requestPermission(function (permission) {
+        // If the user accepts, let's create a notification
+        if (permission === "granted") {
+          var notification = new Notification("Olá! Primeira notificação!");
+        }
+      });
+    }
+    //subscriptionObject = json.stringify(subscribeUserToPush());
+    const subscriptionObject = await subscribeUserToPush();
+    sendSubscriptionToNode(subscriptionObject);
+  }
+  
+  function subscribeUserToPush() { // solicitando inscrição pelo navegador
+    return navigator.serviceWorker.register('/js/sw.js')
+    .then(function(registration) {
+      const subscribeOptions = {
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+          'BIwuuXK7vJ_QvxDTmOp-sLDkCRV8gZJst02gtPg5C4KhgqUoD9_UuY1T3yzacCqnSN6GGpx4WhKku_GX65T-rhA'
+        )
+      };
+      return registration.pushManager.subscribe(subscribeOptions);
+    })
+    .then(function(pushSubscription) {
+      console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
+      return pushSubscription;
+    });
+  }
+
+  async function sendSubscriptionToNode(subscription) { // enviando inscrição para o node
+    console.log("post: "+JSON.stringify(subscription));
+    const response = await axios.post('/webpush', subscription);
+    console.log(response.data.success);
+    if (response.data.success==true){alert("Inscrição cadastrada com sucesso!");}
+  }
+  
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+   
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+   
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
+
 
   

@@ -84,6 +84,8 @@
                   </tr>
                 </table>
                 <button class="button is-danger is-light" @click="this.alert('Ainda não é possível trocar a senha!')">Trocar Senha</button>
+                <button class="button is-danger" @click="subscribe()">Cadastrar notif.</button>
+                <button class="button is-danger" @click="testSubs()">Enviar teste</button>
               </div>
             </div> <!-- Div user -->
             <div id="guest" v-if="see.guestPage"> <!-- --- Guest Page -->
@@ -151,7 +153,6 @@
             <label for="switch-bg"></label>
           </div>
       </section>
-      <button class="button" @click="subscribe()">Notificação</button>
     </div> <!--Fim APP--> 
 
     
