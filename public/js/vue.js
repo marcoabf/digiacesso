@@ -1,9 +1,9 @@
 //import { text } from "body-parser";
 //axios.defaults.baseURL = 'http://localhost:3000';
-//axios.defaults.baseURL = 'http://192.168.1.110:3000';
-axios.defaults.baseURL = 'https://digiacesso.net/';
+axios.defaults.baseURL = 'http://192.168.1.109:3000';
+//axios.defaults.baseURL = 'https://digiacesso.net/';
 //axios.defaults.baseURL = 'http://digiacesso-net.umbler.net/';
-//axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true;
 
 
 function dtBrFormat (obj) { // formata campo data para ser visualizado pelo usuário no formato BR
@@ -147,6 +147,7 @@ var app = new Vue({
           } 
           else { 
             this.api = response.data[0]; 
+            console.log(this.api);
             this.ctrl = response.data;
             //this.controllers = response.data;
             this.see.loginPage = false;

@@ -82,6 +82,7 @@ module.exports = {
         if (results.length>0) {
           console.log ("Consulta do BD retornou registro.");
           console.log(req.sessionID); 
+          console.log(results[0].id);
           req.session.loggedin = true;
           req.session.username = username;   
           req.session.userid = results[0].id;
@@ -273,9 +274,12 @@ module.exports = {
   webPush(req, res) {
     console.log("webpush:");
     console.log(req.body);
+    console.log(req.session.id);
+    console.log(req.session.userid);
     if (!isValidSaveRequest(req, res)) {
       return;
     }
+    console.log("É VÁLIDO!");
     strBody = JSON.stringify(req.body);
     query = "UPDATE users SET subscription=? WHERE id=?";
     pool.query(query, [strBody, req.session.userid], function (error, results, fields) {
@@ -289,6 +293,7 @@ module.exports = {
     query = 'SELECT * FROM users WHERE id=?';
     pool.query(query, [req.session.userid], function (error, results) {
       if (error) throw error;
+      console.log("Enviando Noticação");
       if (results.length>0) {
         let subscription = results[0].subscription;
         let obj = JSON.parse(subscription);
@@ -296,14 +301,14 @@ module.exports = {
         subscription = JSON.stringify(obj);
         console.log(subscription);
         webpush.sendNotification(obj, 'Um visitante chegou!')
-          .catch((err) => {
-            if (err.statusCode === 404 || err.statusCode === 410) {
-              console.log('Subscription has expired or is no longer valid: ', err);
-              return deleteSubscriptionFromDatabase(subscription._id);
-            } else {
-              throw err;
-            }
-          });
+        .catch((err) => {
+          if (err.statusCode === 404 || err.statusCode === 410) {
+            console.log('Subscription has expired or is no longer valid: ', err);
+            return deleteSubscriptionFromDatabase(subscription._id);
+          } else {
+            throw err;
+          }
+        });
         res.send("Notificação enviada!");
         return;
       }
