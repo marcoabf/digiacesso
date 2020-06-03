@@ -1,7 +1,7 @@
 //import { text } from "body-parser";
-//axios.defaults.baseURL = 'http://localhost:3000';
+axios.defaults.baseURL = 'http://localhost:3000';
 //axios.defaults.baseURL = 'http://192.168.1.109:3000';
-axios.defaults.baseURL = 'https://digiacesso.net/';
+//axios.defaults.baseURL = 'https://digiacesso.net/';
 //axios.defaults.baseURL = 'http://digiacesso-net.umbler.net/';
 axios.defaults.withCredentials = true;
 
@@ -284,13 +284,12 @@ var app = new Vue({
   }
   
   function subscribeUserToPush() { // solicitando inscrição pelo navegador
-    return navigator.serviceWorker.register('/js/sw.js')
+    return navigator.serviceWorker.register('/da-sw.js')
     .then(function(registration) {
+      pkey = urlBase64ToUint8Array('BMQhKi9b9wgTSELzr1dKaGtIcv1wXGH9TZuZ6I9s7OCLGCPlZrsBczpB2rasO6TCbDqvxh8hnzPOGu4C');
       const subscribeOptions = {
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          'BIwuuXK7vJ_QvxDTmOp-sLDkCRV8gZJst02gtPg5C4KhgqUoD9_UuY1T3yzacCqnSN6GGpx4WhKku_GX65T-rhA'
-        )
+        applicationServerKey: urlBase64ToUint8Array('BMQhKi9b9wgTSELzr1dKaGtIcv1wXGH9TZuZ6I9s7OCLGCPlZrsBczpB2rasO6TCbDqvxh8hnzPOGu4C-IM7oXw')
       };
       return registration.pushManager.subscribe(subscribeOptions);
     })

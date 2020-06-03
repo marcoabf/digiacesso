@@ -15,9 +15,9 @@ const promisePool = pool.promise();
 const axios = require('axios');
 //var row = [];
 const vapidKeys = {
-    publicKey:'BIwuuXK7vJ_QvxDTmOp-sLDkCRV8gZJst02gtPg5C4KhgqUoD9_UuY1T3yzacCqnSN6GGpx4WhKku_GX65T-rhA',
-    privateKey: 'pVfFaI0B9yPezKupI7LpRByiKqoN4i480HJae4UJiyw'
-  };
+  publicKey:'BMQhKi9b9wgTSELzr1dKaGtIcv1wXGH9TZuZ6I9s7OCLGCPlZrsBczpB2rasO6TCbDqvxh8hnzPOGu4C-IM7oXw',
+  privateKey: 'B_-NWqSNWz_Gh2WkzxbO5RY_kMymFj0LXzX9Tq4PH1g'
+};
 webpush.setVapidDetails(
     'mailto:mb@accontrol.com.br',
     vapidKeys.publicKey,
@@ -41,18 +41,6 @@ webpush.setVapidDetails(
     return true; // true: é uma requisição válida
   };
   
-  const triggerPushMsg = function(subscription, dataToSend) {
-    return webpush.sendNotification(subscription, dataToSend)
-    .catch((err) => {
-      if (err.statusCode === 404 || err.statusCode === 410) {
-        console.log('Sua inscrição expirou ou não é mais válida: ', err);
-        //return deleteSubscriptionFromDatabase(subscription._id);
-      } 
-      else {
-        throw err;
-      }
-    });
-  };
 
 module.exports = {
   //-----------------------------qLogin
@@ -86,6 +74,7 @@ module.exports = {
           req.session.loggedin = true;
           req.session.username = username;   
           req.session.userid = results[0].id;
+          req.session.condoid =  results[0].condoid;
           res.send(results);
         } else { res.send("Usuário ou senha incorretos!"); }
       });
@@ -99,7 +88,8 @@ module.exports = {
     let userID = req.body.userID;
     console.log(userID);
     let query = 'SELECT datetime, firstname, lastname, state ';
-    query += ' FROM access, users, controllers  WHERE users.responsible=? ';
+    // type<10 -> apenas usuários ativos
+    query += ' FROM access, users, controllers  WHERE users.responsible=? AND users.type<10';
     query += ' AND users.id=access.userid AND access.controllerid=controllers.id ORDER BY datetime';
     pool.query(query, [userID], function (error, results, fields) {
       if (error) throw error;
@@ -225,29 +215,35 @@ module.exports = {
   }, // fim do addGuest
   async delGuest(req, res) {
     console.log('delete');
-    const row1 = await promisePool.query('DELETE FROM users WHERE qrcode=?',[req.body.qrcode]);
-    console.log(row1);
-    controllerIp = '192.168.1.99';
-    authUser = 'admin';
-    authPass = 'admin';
-    console.log("antes da requisição utech...")
-    try {
-      const response = await axios.post('http://'+controllerIp+'/?request=deluser', {
-        qrcode: req.body.qrcode
-      },
-      { withCredentials: true,  
-        auth: {
-              username: authUser,
-              password: authPass
-              }
-      });
-      console.log("delete sent to utech");
-      console.log(response);
-      res.send("Dados excluídos com sucesso!");
-    } catch (error) {
-      console.error(error);
+    const row = await promisePool.query('SELECT * FROM controllers, users WHERE condoid=?'[req.session.condoid]);
+    controllerIp = row[0].ip;
+    authUser = row[0].user;
+    authPass = row[0].password;
+    var x,y = 0;
+    while (x<row[0].length) {
+      try {
+        const response = await axios.post('http://'+controllerIp+'/?request=deluser', {
+          qrcode: req.body.qrcode
+        },
+        { withCredentials: true,  
+          auth: {
+                username: authUser,
+                password: authPass
+                }
+        });
+        console.log("delete sent successful to utech");
+        console.log(response);
+        y += 1;
+      } catch (error) {
+        console.error(error);
+      }
     }
-    
+    if (y == row[0].length) {
+      //tipos entre 11 e 19 são usuários desabilitados
+      const row1 = await promisePool.query('UPDATE users SET type=type+10 WHERE qrcode=?',[req.body.qrcode]);
+      console.log(row1);
+      res.send("Dados excluídos com sucesso!");
+    } else { res.send("Não foi possível excluir os dados em todos os acessos! Tente novamente.")}
   },
   openDoor(req, res){ // comando para abrir porta
     ctrlId = req.body.ctrlID;
@@ -300,11 +296,12 @@ module.exports = {
         delete obj.expirationTime;
         subscription = JSON.stringify(obj);
         console.log(subscription);
-        webpush.sendNotification(obj, 'Um visitante chegou!')
+        let msg = {title: "digiACESSO", body:"Notificação em funcionamento"};
+        webpush.sendNotification(obj, JSON.stringify(msg), {TTL: 60}) //sending
         .catch((err) => {
           if (err.statusCode === 404 || err.statusCode === 410) {
             console.log('Subscription has expired or is no longer valid: ', err);
-            return deleteSubscriptionFromDatabase(subscription._id);
+            //return deleteSubscriptionFromDatabase(subscription._id);
           } else {
             throw err;
           }
