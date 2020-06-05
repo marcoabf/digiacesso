@@ -1,7 +1,7 @@
 //import { text } from "body-parser";
-//axios.defaults.baseURL = 'http://localhost:3000';
+axios.defaults.baseURL = 'http://localhost:3000';
 //axios.defaults.baseURL = 'http://192.168.1.109:3000';
-axios.defaults.baseURL = 'https://digiacesso.net/';
+//axios.defaults.baseURL = 'https://digiacesso.net/';
 //axios.defaults.baseURL = 'http://digiacesso-net.umbler.net/';
 axios.defaults.withCredentials = true;
 
@@ -188,10 +188,10 @@ var app = new Vue({
         if (response.data == 'error') { alert('Erro ao cadastrar. Tente Novamente!')} 
         else{
           alert("Dados Cadastrados!");
-          gerarQR(response.data);
           console.log(response.data);
+          this.showQR(response.data);
           this.see.addGuest=false;
-          this.see.qrguest=true;
+          this.mountGuests();
         }
       },
       delGuest: async function (qr) {
@@ -200,6 +200,7 @@ var app = new Vue({
         if (typeof response.data === "string") {
           alert(response.data);
         }
+        this.mountGuests();
       },
       openDoor: async function () { // gera requisição para abrir a porta
         console.log(this.doorSelected);

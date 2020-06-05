@@ -119,14 +119,16 @@
                   <div class="linkQR"> <a id="link" href="javascript:saveImage()">Salve a imagem </a> e envie para o visitante.<br>&nbsp</div>
                 </div>
                 <div class="table-container">
-                  <div class="first-line guest"><div class="table-c"> Nome </div><div class="table-c"> Criado em </div><div class="table-c">Validade </div></div>
-                  <div class="grid div-table-line guest" v-for="n in myguests" :key="n['dtcreated']">
+                  <div class="first-line guest" id="visita"><div class="table-c"> Nome </div><div class="table-c"> Criado em </div><div class="table-c">Validade </div></div>
+                  <div class="grid div-table-line" id="visita" v-for="n in myguests" :key="n['dtcreated']">
                   <div class="table-c">
+                    {{n.firstname}} <br>
                     <span class="icon"><a  @click="showQR(n.qrcode)" ><i class="fas fa-qrcode has-text-info" title="QrCode"></i></a></span> 
-                    <span class="icon has-text-link"><i class="fas fa-user-edit" title="Editar usuário"></i></span>
                     <span class="icon"><a  @click="delGuest(n.qrcode)"><i class="fas fa-trash has-text-danger" title="Excluir usuário"></i></a></span>
-                     &nbsp  {{n.firstname}} </div>
+
+                  </div>
                   <div class="table-c"> {{n.dtcreated | date2br(0,'dt') }} </div><div class="table-c">{{n.dtcreated | date2br(n.validity)}} </div></div>
+                  <div class="last-line guest">&nbsp</div>
                 </div>
             </div> <!-- Div guest -->
             <div id="opendoor" v-if="see.openDoorPage"> <!-- --- Open Door Page -->
@@ -142,9 +144,10 @@
             <div id="reg" v-if="see.regPage"> <!-- --- Register Page -->
               <h1 class="title">Registros de entrada e saída:</h1>
               <div class="table-container">
-                    <div class="first-line"><div class="table-c"> Data </div><div class="table-c"> Nome </div><div class="table-c">Situação </div></div>
-                    <div class="grid div-table-line" v-for="n in access" :key="n['date-time']"><div class="table-c"> {{n.dtBR}} </div><div class="table-c"> {{n.firstname}} </div><div class="table-c">{{n.stateBR}} </div></div>
-              </div>
+                    <div class="first-line" id="registro"><div class="table-c"> Data </div><div class="table-c"> Nome </div><div class="table-c">Situação </div></div>
+                    <div class="grid div-table-line" id="registro" v-for="n in access" :key="n['date-time']"><div class="table-c"> {{n.dtBR}} </div><div class="table-c"> {{n.firstname}} </div><div class="table-c">{{n.stateBR}} </div></div>
+                    <div class="last-line">&nbsp</div>
+                  </div>
             </div>
           </div> <!-- Div container -->
           <br>  

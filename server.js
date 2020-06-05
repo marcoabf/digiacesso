@@ -43,8 +43,7 @@ webpush.setVapidDetails(
   
 
 module.exports = {
-  //-----------------------------qLogin
-   qLogin(req, res) {
+   qLogin(req, res) {  //-------- processo de login
     let username = req.body.username;
     let password = req.body.password;
     console.log(req.session);
@@ -83,30 +82,14 @@ module.exports = {
       res.send('Por favor, entre com um usuário e password.');
     }
   },
-   access(req, res){ // Mostra a lista de acessos
-    console.log('Access');
-    let userID = req.body.userID;
-    console.log(userID);
-    let query = 'SELECT datetime, firstname, lastname, state ';
-    // type<10 -> apenas usuários ativos
-    query += ' FROM access, users, controllers  WHERE users.responsible=? AND users.type<10';
-    query += ' AND users.id=access.userid AND access.controllerid=controllers.id ORDER BY datetime';
-    pool.query(query, [userID], function (error, results, fields) {
-      if (error) throw error;
-      console.log(results);
-      if (results.length>0) res.send(results); else res.send("Sem registros de acesso!");
-    });
-   },
-  //-------------------------------------------doLogout - verifying login
-  doLogout(req, res){
+  doLogout(req, res){  //----- processo de logout
     console.log(req.session.username);
     console.log(req.session.id);  
     req.session.userid = '';
     req.session.loggedin = false;
     res.end();
   },  
-  //------------------------utech ---- recebimento de eventos das controladoras
-  utech(req, res){
+  async utech(req, res){  //------utech ---- recebimento de eventos das controladoras
     console.log("utech");
     console.log('headers:');
     console.log(req.headers);
@@ -124,23 +107,35 @@ module.exports = {
       console.log("QRcode");
       qrcode = req.query.qrcode;
       console.log(qrcode);
-      pool.query("SELECT id FROM users WHERE qrcode = ?", [qrcode], function (error, results) {
-        if (error) throw error;
-        console.log(results);
-        idUser = (results.length>0) ? results[0].id : 0;
-        console.log('user: '+idUser);
-        query='INSERT INTO access(datetime, controllerid, userid, state, request) VALUES(?, ?, ?, ?, ?)';
-        pool.query(query, [req.query.time, serial, idUser, req.query.state, req.query.request], (error, result) => {   
-          if (error) throw error;
-          console.log(result);
-        }); 
-      });
+      const rowFindUser = await promisePool.query("SELECT id, firstname, responsible FROM users WHERE qrcode = ?", [qrcode])
+        .then( ([rows,fields]) => { 
+          console.log(rows);
+          idUser = (rows.length>0) ? rows[0].id : 0;
+          firstname = (rows.length>0) ? rows[0].firstname: 'QrCode não reconhecido';
+          resp = (rows.length>0) ? rows[0].responsible: '0';
+          console.log('user: '+idUser);
+        })
+        .catch(err => console.log(err));
+      var subscription =  '';
+      const rowSubs = await promisePool.query('SELECT subscription FROM users WHERE id=?',[resp])
+        .then( ([rows,fields]) => { subscription = rows[0].subscription; })
+        .catch(err => console.log(err));
+        console.log(subscription);
+      query='INSERT INTO access(datetime, controllerid, userid, state, request) VALUES(?, ?, ?, ?, ?)';
+      const rInsertAccess = await promisePool.query(query, [req.query.time, serial, idUser, req.query.state, req.query.request])
+        .then( ([rows,fields]) => {console.log(rows);})
+        .catch(err => console.log(err));
+
+      let obj = JSON.parse(subscription);
+      let body = firstname + ": Acesso: " + req.query.state;
+      let msg = {title: "digiACESSO", body: body};
+      webpush.sendNotification(obj, JSON.stringify(msg), {TTL: 60}); //sending
     } //fim qrCode
     res.status(200).end();
   }, //---------------------utech
   guests(req, res){
     //lista visitantes
-    query = "SELECT * FROM users WHERE responsible=?";  //buscar dados das controladoras;
+    query = "SELECT * FROM users WHERE responsible=? AND type<10";  //buscar dados das controladoras;
     pool.query(query,[req.body.userID], function (error, results, fields) {
       if (error) throw error;  
       res.send(results);  
@@ -151,7 +146,7 @@ module.exports = {
     lifecount = req.body.lifecount;
     //qrcode = Math.floor((Math.random() * 10000) + 1);
     qrcode = randomstring.generate(6);
-    qrcode = req.body.responsible + ' ' + req.body.type +' '+ qrcode;
+    qrcode = req.body.responsible + '-' + req.body.type +'-'+ qrcode;
     let name = req.body.name;
     let validity = req.body.validity *60*60*24;
     let hIn = req.body.hinicial;
@@ -168,7 +163,7 @@ module.exports = {
     pool.query('SELECT * FROM users WHERE qrcode=?',[qrcode], function (error, result, fields) {
       if (error) throw error;
       repet = Number(result.length) + 1;
-      qrcode += ' ' + repet; // cria um diferenciador caso exista um qrcode igual
+      qrcode += '-' + repet; // cria um diferenciador caso exista um qrcode igual
       query = "INSERT INTO users (firstname, condoid, type, responsible, validity, perm, qrcode, dtcreated) ";
       query +=" VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
       pool.query(query,[name, req.body.condoid, req.body.type, req.body.responsible, validity, perm, qrcode, dtc], function (error, results, fields) {
@@ -206,7 +201,7 @@ module.exports = {
             .catch(function (error) {
               console.log(error);
               res.send('error');
-              deleteQrUser(qrcode);
+              //deleteQrUser(qrcode);
           });
           //console.log (response.data);
         } // fim do if
@@ -215,12 +210,19 @@ module.exports = {
   }, // fim do addGuest
   async delGuest(req, res) {
     console.log('delete');
-    const row = await promisePool.query('SELECT * FROM controllers, users WHERE condoid=?'[req.session.condoid]);
-    controllerIp = row[0].ip;
-    authUser = row[0].user;
-    authPass = row[0].password;
-    var x,y = 0;
-    while (x<row[0].length) {
+    console.log(req.session.condoid);
+    const row = await promisePool.query('SELECT * FROM controllers WHERE condoid=?',[req.session.condoid])
+    .then( ([rows,fields]) => {
+      console.log(rows);
+      controllerIp = rows[0].ip;
+      authUser = rows[0].user;
+      authPass = rows[0].password;
+      xRows = rows.length;
+    })
+    .catch(err => console.log(err));
+    console.log(xRows);
+    var x = 0, y = 0;
+    while (x < xRows) {
       try {
         const response = await axios.post('http://'+controllerIp+'/?request=deluser', {
           qrcode: req.body.qrcode
@@ -235,10 +237,12 @@ module.exports = {
         console.log(response);
         y += 1;
       } catch (error) {
-        console.error(error);
+        if (error.response.status == 400) {y += 1}
+        console.error(error.response.status);
       }
+      x+=1;
     }
-    if (y == row[0].length) {
+    if (y == xRows) {
       //tipos entre 11 e 19 são usuários desabilitados
       const row1 = await promisePool.query('UPDATE users SET type=type+10 WHERE qrcode=?',[req.body.qrcode]);
       console.log(row1);
@@ -267,6 +271,20 @@ module.exports = {
       }); // axios.get
     });   //query
   },
+  access(req, res){ // Mostra a lista de acessos
+    console.log('Access');
+    let userID = req.body.userID;
+    console.log(userID);
+    let query = 'SELECT datetime, firstname, lastname, state ';
+    // type<10 -> apenas usuários ativos
+    query += ' FROM access, users, controllers  WHERE users.responsible=? ';
+    query += ' AND users.id=access.userid AND access.controllerid=controllers.id ORDER BY datetime DESC';
+    pool.query(query, [userID], function (error, results, fields) {
+      if (error) throw error;
+      console.log(results);
+      if (results.length>0) res.send(results); else res.send("Sem registros de acesso!");
+    });
+   },
   webPush(req, res) {
     console.log("webpush:");
     console.log(req.body);
@@ -312,7 +330,6 @@ module.exports = {
     res.send("Usuário não encontrado!");
     });
   }
-
 } // fim do export
 //-------------------------------------------------------------
 
