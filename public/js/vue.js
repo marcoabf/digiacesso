@@ -126,7 +126,6 @@ var app = new Vue({
           this.see[page] = true; 
       },
       subscribe: function () { //web push notification
-          // em desenvolvimento
           notifyMe();
       },
       testSubs: async function () { // ask for a test notification
@@ -247,7 +246,7 @@ var app = new Vue({
   });
 
   async function notifyMe() { //verifica se o navegador é compatível
-
+    alert('verificando');
     if (!('serviceWorker' in navigator)) {
       console.log('Service worker não é suportado por esse navegador!'); 
       alert('Service worker não é suportado por esse navegador!');
