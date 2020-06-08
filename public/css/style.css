@@ -7,6 +7,7 @@ body {
   border: 0px ;
 }
 
+
 #link {
   text-align: left;
 }
@@ -112,7 +113,7 @@ body {
   .last-line {width: 600px;}
   .div-table-line { width: 600px; grid-template-columns: 250px 150px 200px; }
   .div-table-line::after {width: 600px;}
-  #visita {  width: 600px; grid-template-columns: 300px 150px 150px;}
+  #visita {  width: 600px; grid-template-columns: 60% 20% 20%;}
   #registro{  width: 600px; grid-template-columns: 170px 300px 280px;  }
 }
 

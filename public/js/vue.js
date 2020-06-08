@@ -249,25 +249,27 @@ var app = new Vue({
   async function notifyMe() { //verifica se o navegador é compatível
 
     if (!('serviceWorker' in navigator)) {
-      // Service Worker isn't supported on this browser, disable or hide UI.
-      console.log('Service worker não é suportado');
+      console.log('Service worker não é suportado por esse navegador!'); 
+      alert('Service worker não é suportado por esse navegador!');
       return;
-    } else { console.log('Service worker suportado!');}
+    } else { console.log('Service worker é suportado!');}
     
     if (!('PushManager' in window)) {
-      // Push isn't supported on this browser, disable or hide UI.
-      console.log('Push não é suportado');
+      console.log('Push não é suportado');  // disable or hide UI.
+      alert('Push não é suportado');
       return;
     } else {  console.log('Push é suportado');}
   
     // Let's check if the browser supports notifications
     if (!("Notification" in window)) {
       console.log("Esse navegador não suporta notificação");
+      alert('O navegador não aceita notificação!');
     }
     // Let's check whether notification permissions have alredy been granted
     else if (Notification.permission === "granted") {
       // If it's okay let's create a notification
-      console.log("Esse navegador suporta notificação");
+      console.log("Esse navegador suporta notificação!");
+      console.log(Notification.permission);
       var notification = new Notification("Olá! Notificação teste!");
     }
     // Otherwise, we need to ask the user for permission
@@ -279,6 +281,7 @@ var app = new Vue({
         }
       });
     }
+    alert(Notification.permission);
     //subscriptionObject = json.stringify(subscribeUserToPush());
     const subscriptionObject = await subscribeUserToPush();
     sendSubscriptionToNode(subscriptionObject);
