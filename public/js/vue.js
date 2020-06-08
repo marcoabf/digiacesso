@@ -247,6 +247,7 @@ var app = new Vue({
 
   async function notifyMe() { //verifica se o navegador é compatível
     alert('verificando');
+    alert(Notification.permission);
     if (!('serviceWorker' in navigator)) {
       console.log('Service worker não é suportado por esse navegador!'); 
       alert('Service worker não é suportado por esse navegador!');
@@ -267,7 +268,7 @@ var app = new Vue({
     // Let's check whether notification permissions have alredy been granted
     else if (Notification.permission === "granted") {
       // If it's okay let's create a notification
-      console.log("Esse navegador suporta notificação!");
+      console.log("Permissão para notificação liberada!");
       console.log(Notification.permission);
       var notification = new Notification("Olá! Notificação teste!");
     }
@@ -280,13 +281,14 @@ var app = new Vue({
         }
       });
     }
-    alert(Notification.permission);
+    alert("fim da verificação");
     //subscriptionObject = json.stringify(subscribeUserToPush());
     const subscriptionObject = await subscribeUserToPush();
     sendSubscriptionToNode(subscriptionObject);
   }
   
   function subscribeUserToPush() { // solicitando inscrição pelo navegador
+    alert('registrando service worker');
     return navigator.serviceWorker.register('/da-sw.js')
     .then(function(registration) {
       pkey = urlBase64ToUint8Array('BMQhKi9b9wgTSELzr1dKaGtIcv1wXGH9TZuZ6I9s7OCLGCPlZrsBczpB2rasO6TCbDqvxh8hnzPOGu4C');
@@ -297,12 +299,14 @@ var app = new Vue({
       return registration.pushManager.subscribe(subscribeOptions);
     })
     .then(function(pushSubscription) {
+      alert('registrado');
       console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
       return pushSubscription;
     });
   }
 
   async function sendSubscriptionToNode(subscription) { // enviando inscrição para o node
+    alert('enviando');
     console.log("post: "+JSON.stringify(subscription));
     const response = await axios.post('/webpush', subscription);
     console.log(response.data.success);
