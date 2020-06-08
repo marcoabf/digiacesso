@@ -271,14 +271,14 @@ var app = new Vue({
       // If it's okay let's create a notification
       console.log("Permissão para notificação liberada!");
       console.log(Notification.permission);
-      var notification = new Notification("Olá! Notificação teste!");
+      // var notification = new Notification("Olá! Notificação teste!");
     }
     // Otherwise, we need to ask the user for permission
     else if (Notification.permission !== 'denied' || Notification.permission === "default") {
       Notification.requestPermission(function (permission) {
         // If the user accepts, let's create a notification
         if (permission === "granted") {
-          var notification = new Notification("Olá! Primeira notificação!");
+          //var notification = new Notification("Olá! Primeira notificação!");
         }
       });
     }
