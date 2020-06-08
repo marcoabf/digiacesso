@@ -246,8 +246,9 @@ var app = new Vue({
   });
 
   async function notifyMe() { //verifica se o navegador é compatível
-    alert('verificando');
+    alert('verificando service worker e push');
     alert(Notification.permission);
+    
     if (!('serviceWorker' in navigator)) {
       console.log('Service worker não é suportado por esse navegador!'); 
       alert('Service worker não é suportado por esse navegador!');
@@ -259,7 +260,7 @@ var app = new Vue({
       alert('Push não é suportado');
       return;
     } else {  console.log('Push é suportado');}
-  
+    alert("verificando notificação");
     // Let's check if the browser supports notifications
     if (!("Notification" in window)) {
       console.log("Esse navegador não suporta notificação");
