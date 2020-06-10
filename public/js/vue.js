@@ -2,7 +2,6 @@
 //axios.defaults.baseURL = 'http://localhost:3000';
 //axios.defaults.baseURL = 'http://192.168.1.110:3000';
 axios.defaults.baseURL = 'https://digiacesso.net/';
-//axios.defaults.baseURL = 'http://digiacesso-net.umbler.net/';
 axios.defaults.withCredentials = true;
 
 
@@ -207,12 +206,14 @@ var app = new Vue({
         }
       },
       delGuest: async function (qr) {
-        const response = await axios.post('/delguest', {qrcode: qr}); //limit => num máximo de registros
-        console.log(response.data);
-        if (typeof response.data === "string") {
-          alert(response.data);
+        if(confirm("Tem certeza que deseja excluir o visitante?")==true) {
+          const response = await axios.post('/delguest', {qrcode: qr}); //limit => num máximo de registros
+          console.log(response.data);
+          if (typeof response.data === "string") {
+            alert(response.data);
+          }
+          this.mountGuests();
         }
-        this.mountGuests();
       },
       openDoor: async function () { // gera requisição para abrir a porta
         console.log(this.doorSelected);
@@ -265,25 +266,21 @@ var app = new Vue({
   async function notifyMe() { //verifica se o navegador é compatível    
     if (!('serviceWorker' in navigator)) {
       console.log('Service worker não é suportado por esse navegador!'); 
-      alert('Service worker não é suportado por esse navegador!');
       return;
     } else { console.log('Service worker é suportado!');}
     
     if (!('PushManager' in window)) {
       console.log('Push não é suportado');  // disable or hide UI.
-      alert('Push não é suportado');
       return;
     } else {  console.log('Push é suportado');}
     // Let's check if the browser supports notifications
     if (!("Notification" in window)) {
       console.log("Esse navegador não suporta notificação");
-      alert('O navegador não aceita notificação!');
     }
     // Let's check whether notification permissions have alredy been granted
     else if (Notification.permission === "granted") {
       // If it's okay let's create a notification
       console.log("Permissão para notificação liberada!");
-      console.log(Notification.permission);
       // var notification = new Notification("Olá! Notificação teste!"); //incompat com chrome
     }
     // Otherwise, we need to ask the user for permission
@@ -303,7 +300,6 @@ var app = new Vue({
   }
   
   function subscribeUserToPush() { // solicitando inscrição pelo navegador
-    alert('registrando service worker');
     return navigator.serviceWorker.register('/da-sw.js')
     .then(function(registration) {
       pkey = urlBase64ToUint8Array('BMQhKi9b9wgTSELzr1dKaGtIcv1wXGH9TZuZ6I9s7OCLGCPlZrsBczpB2rasO6TCbDqvxh8hnzPOGu4C');
@@ -314,7 +310,6 @@ var app = new Vue({
       return registration.pushManager.subscribe(subscribeOptions);
     })
     .then(function(pushSubscription) {
-      alert('registrado');
       console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
       return pushSubscription;
     });

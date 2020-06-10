@@ -6,12 +6,10 @@ body {
   margin: 0px;
   border: 0px ;
 }
-
-
 #link {
   text-align: left;
 }
-#startPage {
+#startPage { /* Div com os Botões iniciais */
   text-align: center;
   margin-bottom: 20px;
 }
@@ -111,8 +109,9 @@ body {
   background-color: #dcfcdf;
 }
 
-#visita { grid-template-columns: 40% 30% 30%;}
+#visita { grid-template-columns: 65% 0% 35%;}
 #registro{ grid-template-columns: 30% 40% 30%;  }
+.transp{ color: rgba(255, 255, 255, 0);}
 
 .table-c {
   display: inline-block;
@@ -126,6 +125,8 @@ body {
   .div-table-line { width: 600px; grid-template-columns: 250px 150px 200px; }
   #visita {  width: 600px; grid-template-columns: 60% 20% 20%;}
   #registro{  width: 600px; grid-template-columns: 20% 60% 20%; }
+  .transp{ color: rgb(0, 0, 0);}
+  #startPage { text-align: left; }
 }
 
 /* Configuração do Loading ---------------------------- */

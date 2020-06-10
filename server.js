@@ -127,7 +127,7 @@ module.exports = {
         .catch(err => console.log(err));
 
       let obj = JSON.parse(subscription);
-      let body = firstname + ": Acesso: " + req.query.state;
+      let body = firstname + ": Acesso: " + stateBr(req.query.state);
       let msg = {title: "digiACESSO", body: body};
       webpush.sendNotification(obj, JSON.stringify(msg), {TTL: 60}); //sending
     } //fim qrCode
@@ -331,3 +331,11 @@ module.exports = {
 } // fim do export
 //-------------------------------------------------------------
 
+function stateBr (obj) { // traduz o campo state de EN para BR
+  switch (obj.state) {
+    case 'granted': obj.stateBR = "Liberado"; break;
+    case 'blocked': obj.stateBR = "Bloqueado"; break;
+    case 'doublepass': obj.stateBR = "Dupla passagem detectada!"; break;
+  }
+  return obj;
+}

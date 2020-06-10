@@ -134,7 +134,7 @@
                   <div class="linkQR"> <a id="link" href="javascript:saveImage()">Salve a imagem </a> e envie para o visitante.<br>&nbsp</div>
                 </div></div>
                 <div class="table-container">
-                  <div class="first-line guest" id="visita"><div class="table-c"> Nome </div><div class="table-c"> Criado em </div><div class="table-c">Permissão </div></div>
+                  <div class="first-line guest" id="visita"><div class="table-c"> Nome </div><div class="table-c transp"> Criado em </div><div class="table-c">Permissão </div></div>
                   <div class="grid div-table-line" id="visita" v-for="n in myguests" :key="n['dtcreated']">
                   <div class="table-c">
                     {{n.firstname}} <br>
@@ -142,7 +142,7 @@
                     <span class="icon"><a  @click="delGuest(n.qrcode)"><i class="fas fa-trash has-text-danger" title="Excluir usuário"></i></a></span>
 
                   </div>
-                  <div class="table-c"> {{n.dtcreated | date2br(0,'dt') }} </div><div class="table-c">{{n.perm | permissao}} </div></div>
+                  <div class="table-c transp"> {{n.dtcreated | date2br(0,'dt') }} </div><div class="table-c">{{n.perm | permissao}} </div></div>
                   <div class="last-line">&nbsp</div>
                 </div>
               
