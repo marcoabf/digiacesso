@@ -142,13 +142,11 @@ module.exports = {
     });
   },
   addGuest(req, res){
+    console.log("addGuest");
     //padrao do qrcode: userID-X-YYYY-Z onde YYYY é um número aleatório e X é tipo de usuário
-    lifecount = req.body.lifecount;
-    //qrcode = Math.floor((Math.random() * 10000) + 1);
-    qrcode = randomstring.generate(6);
+    qrcode = randomstring.generate(6); //gera uma string randomica de 6 caracteres
     qrcode = req.body.responsible + '-' + req.body.type +'-'+ qrcode;
     let name = req.body.name;
-    let validity = req.body.validity *60*60*24;
     let hIn = req.body.hinicial;
     let hOut = req.body.hfinal;
     name = (name=='')?'Sem nome':name;
@@ -164,9 +162,9 @@ module.exports = {
       if (error) throw error;
       repet = Number(result.length) + 1;
       qrcode += '-' + repet; // cria um diferenciador caso exista um qrcode igual
-      query = "INSERT INTO users (firstname, condoid, type, responsible, validity, perm, qrcode, dtcreated) ";
-      query +=" VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-      pool.query(query,[name, req.body.condoid, req.body.type, req.body.responsible, validity, perm, qrcode, dtc], function (error, results, fields) {
+      query = "INSERT INTO users (firstname, condoid, type, responsible, perm, qrcode, dtcreated) ";
+      query +=" VALUES (?, ?, ?, ?, ?, ?, ?)";
+      pool.query(query,[name, req.body.condoid, req.body.type, req.body.responsible, perm, qrcode, dtc], function (error, results, fields) {
         if (error) throw error;  
         console.log(results);
       });
@@ -182,9 +180,8 @@ module.exports = {
           axios.post('http://'+controllerIp+'/?request=adduser', {
               name: name,
               qrcode: qrcode,
-              validity: validity,
               perm1: perm,
-              lifecount: lifecount,
+              lifecount: req.body.lifecount,
               visitor: true,
               key: key
             },
@@ -195,7 +192,7 @@ module.exports = {
                     }
             })
             .then(function (response) {
-              console.log(response.data);
+              console.log(response);
               res.send(qrcode);
             })
             .catch(function (error) {
@@ -278,8 +275,9 @@ module.exports = {
     let query = 'SELECT datetime, firstname, lastname, state ';
     // type<10 -> apenas usuários ativos
     query += ' FROM access, users, controllers  WHERE users.responsible=? ';
-    query += ' AND users.id=access.userid AND access.controllerid=controllers.id ORDER BY datetime DESC';
-    pool.query(query, [userID], function (error, results, fields) {
+    query += ' AND users.id=access.userid AND access.controllerid=controllers.id ORDER BY datetime DESC ';
+    query += 'LIMIT 0, ?'
+    pool.query(query, [userID, req.body.limit], function (error, results, fields) {
       if (error) throw error;
       console.log(results);
       if (results.length>0) res.send(results); else res.send("Sem registros de acesso!");

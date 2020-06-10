@@ -32,6 +32,26 @@ body {
   border-radius: 10px;
   padding: 20px;
 }
+.blocks {
+  display: grid;
+  width: 360px; 
+  grid-template-columns: 50% 50%;
+}
+.cont { //janela do qrcode
+  display: inline-block;
+  align-items: center;
+  text-align: center;
+  position: fixed;
+  top: 10%;
+  width: 300px;
+  height: 400px;
+  z-index: 1;
+  border-style: solid;
+  border-width: 3px;
+  background-color: white;
+}
+
+
 /* Configuração das transições ---------------------------- */
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;
@@ -50,31 +70,31 @@ body {
 
 /* Layout da tabela div ---------------------------- */
 :root {
-  --width-small: 350px;
-  --width-big: 600px;
+  --width-small: 100%;
 }
 .first-line {
   font-size: 1.5 rem;
   display: grid;
   width: var(--width-small);
-  grid-template-columns: 200px 100px 100px;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   border-style: solid;
   border-width: 1px;
   border-color: green;
   background-color: #b2f5ba;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 .last-line {
-  font-size: 1.5 rem;
   display: grid;
   width: var(--width-small);
+  height: 35px;
   border-style: solid;
   border-color: green;
   border-width: 1px;
-  border-top-width: 0px;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
+  text-align: center;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
   background-color: #b2f5ba;
 }
 .div-table-line{
@@ -82,23 +102,17 @@ body {
   padding-top: 2px;
   padding-bottom: 0px;
   width: var(--width-small);
-  border-left-style: solid;
-  border-right-style: solid;
+  border-style: solid;
   border-width: 1px;
   border-color: green;
   background-color: #ffffffe1;
-  
 }
-.div-table-line::after {
-  content: " ";
-  width: var(--width-small);
-  height: 1px;
-  background-color: green;
-  display: flex;
+.div-table-line:hover {
+  background-color: #dcfcdf;
 }
 
-#visita {  width: 350px; grid-template-columns: 150px 100px 100px;}
-#registro{  width: 350px; grid-template-columns: 100px 150px 100px;  }
+#visita { grid-template-columns: 40% 30% 30%;}
+#registro{ grid-template-columns: 30% 40% 30%;  }
 
 .table-c {
   display: inline-block;
@@ -106,15 +120,12 @@ body {
   padding-left: 5px;
 }
 
-.table-c {}
-
 @media screen and (min-width: 600px) {
   .first-line { width: 600px; grid-template-columns: 250px 150px 200px;}
   .last-line {width: 600px;}
   .div-table-line { width: 600px; grid-template-columns: 250px 150px 200px; }
-  .div-table-line::after {width: 600px;}
   #visita {  width: 600px; grid-template-columns: 60% 20% 20%;}
-  #registro{  width: 600px; grid-template-columns: 170px 300px 280px;  }
+  #registro{  width: 600px; grid-template-columns: 20% 60% 20%; }
 }
 
 /* Configuração do Loading ---------------------------- */

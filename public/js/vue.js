@@ -1,19 +1,19 @@
 //import { text } from "body-parser";
 //axios.defaults.baseURL = 'http://localhost:3000';
-//axios.defaults.baseURL = 'http://192.168.1.109:3000';
+//axios.defaults.baseURL = 'http://192.168.1.110:3000';
 axios.defaults.baseURL = 'https://digiacesso.net/';
 //axios.defaults.baseURL = 'http://digiacesso-net.umbler.net/';
 axios.defaults.withCredentials = true;
 
 
 function dtBrFormat (obj) { // formata campo data para ser visualizado pelo usuário no formato BR
-  let yyyy = obj['datetime'].slice(4,8);
+  let yy = obj['datetime'].slice(6,8);
   let mm = obj['datetime'].slice(2,4);
   let dd = obj['datetime'].slice(0,2);
   let hh = obj['datetime'].slice(8,10);
   let mi = obj['datetime'].slice(10,12);
   let ss = obj['datetime'].slice(12,14);
-  obj.dtBR = dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + mi + ':' + ss;
+  obj.dtBR = dd + '/' + mm + '/' + yy + ' ' + hh + ':' + mi + ':' + ss;
   return obj;
 }
 function stateBr (obj) { // traduz o campo state de EN para BR
@@ -53,7 +53,6 @@ var pages = {
 };
 var guests = {
     name: '',
-    validity: 1,
     days: '0-6',
     hinicial: 8,
     hfinal: 18,
@@ -79,6 +78,7 @@ var app = new Vue({
       see: pages,
       guest: guests,
       act1: ' is-active',
+      regLimit: 0,
       login: login
     },
     mounted: async function () {
@@ -110,16 +110,30 @@ var app = new Vue({
           newdate = moment(newdate).add(days, 'days');
         }
         if (format=='dt') {
-          return moment(newdate).format("DD/MM/YYYY");  
+          return moment(newdate).format("DD/MM/YY");  
         } else {
-        return moment(newdate).format("DD/MM/YYYY  HH:mm:ss");
+        return moment(newdate).format("DD/MM/YY  HH:mm:ss");
         }
+        },
+      permissao: function (value) {
+        let saida = '';
+        if (value != null) {
+          value = value.split(" ");
+          if (value[0].length<4){
+            saida = diaDaSemana(value[0].charAt(0));
+              if (saida != diaDaSemana(value[0].charAt(2)))
+                saida += ' a ' + diaDaSemana(value[0].charAt(2));
+              saida += ' ' + value[1]
+          }
+        }
+        return saida;
       }
     },
     methods: 
     {
       seeOne: function (page) {
           this.loading = false;
+          if (this.see.regPage==false) this.regLimit = 0;
           for (values in this.see) {
             this.see[values] = false
           }
@@ -136,7 +150,6 @@ var app = new Vue({
         //mostra qrcode
         this.see.qrGuest = true;
         gerarQR(qr);
-        window.location.hash = '#qrguest'; // get focus on canvas id
       },
       loginCheck: async function () {
           const response = await axios.post('/auth', {username: this.login.username, password: this.login.password});
@@ -171,9 +184,9 @@ var app = new Vue({
         this.loading = false;
       },
       addGuest: async function () {
+          console.log('lifecount: ' + this.guest.lifecount);
         const response = await axios.post('/addguest', {
           name: this.guest.name,
-          validity: this.guest.validity,
           days: this.guest.days,
           hinicial: this.guest.hinicial,
           hfinal: this.guest.hfinal,
@@ -203,17 +216,21 @@ var app = new Vue({
       },
       openDoor: async function () { // gera requisição para abrir a porta
         console.log(this.doorSelected);
-        const response = await axios.post('/open', {ctrlID: this.doorSelected});
-          console.log (response.data);
-          if (typeof response.data === 'string') {
-            alert(response.data);
-          } 
+        if(confirm("Tem certeza que deseja abrir esse acesso?")==true)
+        {
+          const response = await axios.post('/open', {ctrlID: this.doorSelected});
+            console.log (response.data);
+            if (typeof response.data === 'string') {
+              alert(response.data);
+            } 
+        }
       },
       regStart: async function () { // carrega página de registros de acesso
         this.seeOne('regPage');
         this.loading = true;
         console.log(this.api.id);
-        const response = await axios.post('/access', {userID: this.api.id});
+        this.regLimit += 10;
+        const response = await axios.post('/access', {userID: this.api.id, limit: this.regLimit});
         mAccess=response.data;
         if (typeof response.data === "string") {
           alert(response.data);
@@ -245,10 +262,7 @@ var app = new Vue({
     }
   });
 
-  async function notifyMe() { //verifica se o navegador é compatível
-    alert('verificando service worker e push');
-    alert(Notification.permission);
-    
+  async function notifyMe() { //verifica se o navegador é compatível    
     if (!('serviceWorker' in navigator)) {
       console.log('Service worker não é suportado por esse navegador!'); 
       alert('Service worker não é suportado por esse navegador!');
@@ -260,7 +274,6 @@ var app = new Vue({
       alert('Push não é suportado');
       return;
     } else {  console.log('Push é suportado');}
-    alert("verificando notificação");
     // Let's check if the browser supports notifications
     if (!("Notification" in window)) {
       console.log("Esse navegador não suporta notificação");
@@ -271,21 +284,22 @@ var app = new Vue({
       // If it's okay let's create a notification
       console.log("Permissão para notificação liberada!");
       console.log(Notification.permission);
-      // var notification = new Notification("Olá! Notificação teste!");
+      // var notification = new Notification("Olá! Notificação teste!"); //incompat com chrome
     }
     // Otherwise, we need to ask the user for permission
     else if (Notification.permission !== 'denied' || Notification.permission === "default") {
       Notification.requestPermission(function (permission) {
         // If the user accepts, let's create a notification
         if (permission === "granted") {
-          //var notification = new Notification("Olá! Primeira notificação!");
+          //var notification = new Notification("Olá! Primeira notificação!"); //incompat com chrome
         }
       });
     }
-    alert("fim da verificação");
     //subscriptionObject = json.stringify(subscribeUserToPush());
-    const subscriptionObject = await subscribeUserToPush();
-    sendSubscriptionToNode(subscriptionObject);
+    if (Notification.permission === "granted") {
+      const subscriptionObject = await subscribeUserToPush();
+      sendSubscriptionToNode(subscriptionObject);
+    }
   }
   
   function subscribeUserToPush() { // solicitando inscrição pelo navegador
@@ -329,5 +343,18 @@ var app = new Vue({
     return outputArray;
   }
 
+  function diaDaSemana (value) {
+    let saida;
+    switch (value) {
+      case '0': saida = "Dom"; break;
+      case '1': saida = "Seg"; break;
+      case '2': saida = "Ter"; break;
+      case '3': saida = "Qua"; break;
+      case '4': saida = "Qui"; break;
+      case '5': saida = "Sex"; break;
+      case '6': saida = "Sab"; break;
+    }
+    return saida;
+  }
 
   

@@ -26,10 +26,10 @@
       <section class="section"> <!--Starting Section-->
           <div class="container">
             <div id="startPage" v-if="showbtn">
-              <button id="btn_user" class="button  is-medium" @click="seeOne('userPage')" >Usuário</button>
-              <button id="btn_guest" class="button is-medium" @click="mountGuests()" >Visitas</button>
-              <button class="button is-medium" @click="seeOne('openDoorPage')" >Abrir</button>
-              <button class="button is-medium" @click="regStart()" >Registros</button>
+              <button id="btn_user" class="button  is-medium" @click="seeOne('userPage')" ><i class="fas fa-user"></i>&nbsp Usuário</button>
+              <button id="btn_guest" class="button is-medium" @click="mountGuests()" ><i class="fas fa-user-friends"></i>&nbsp Visitas</button>
+              <button class="button is-medium" @click="seeOne('openDoorPage')" ><i class="fas fa-unlock"></i>&nbsp Abrir</button>
+              <button class="button is-medium" @click="regStart()" ><i class="fas fa-exchange-alt"></i>&nbsp Registros</button>
               <br>
             </div>  <!-- fim da start page-->
             <div class="load" v-if="loading">
@@ -80,7 +80,7 @@
                   </tr><tr> 
                     <td><strong>Email:</strong></td><td>{{api.email}}</td>
                   </tr><tr> 
-                    <td><strong>Condomínio:</strong></td><td>{{api.condoName}}</td>
+                    <td><strong>Condom.:</strong></td><td>{{api.condoName}}</td>
                   </tr>
                 </table>
                 <button class="button is-danger is-light" @click="this.alert('Ainda não é possível trocar a senha!')">Trocar Senha</button>
@@ -93,33 +93,48 @@
               <button class="button is-primary" v-on:click="see.addGuest=!see.addGuest" >Novo Cadastro</button>
                 <div id="addguest" v-if="see.addGuest">
                   <div class = "field">
-                      <label class="label">Nome</label>
-                      <input class="input" type="text" placeholder="Nome da visita" v-model="guest.name">
-                      <label class="label">Validade (dias)</label>
-                      <input class="slider has-output is-success is-medium" step="0" min="1" max="30" v-model="guest.validity" type="range">
-                      <output for="sliderWithValue">{{guest.validity}}</output>
+                    <label class="label">Nome</label>
+                    <input class="input" type="text" placeholder="Nome da visita" v-model="guest.name">
+                    <label class="label">Quantidade de acessos:</label>
+                    <label class="radio"><input type="radio" name="life" value="0" v-model="guest.lifecount" checked> Acesso ilimitado</label><br>
+                    <label class="radio"><input type="radio" name="life" value="1" v-model="guest.lifecount"> Liberar apenas 1 acesso</label><br>
+                    <div class="superButton">
+
+                    </div>
+                    <div id="permData"></div>
+                    <div id="permSemana">
                       <label class="label">Liberar nos seguintes dias</label>
-                      <label class="radio">
-                        <input type="radio" name="days" value="0-6" v-model="guest.days" checked> Todos os dias</label><br>
-                        <input type="radio" name="days" value="1-5" v-model="guest.days"> Segunda a Sexta</label><br>
-                        <input type="radio" name="days" value="0" v-model="guest.days">Domingo</label><br>
-                        <input type="radio" name="days" value="6" v-model="guest.days">Sábado</label><br>
-                      </label>
-                      <label class="label">Horários permitidos:</label>
-                      <strong>Inicio &nbsp</strong><input class="slider is-yellow" step="1" min="0" max="23" v-model="guest.hinicial" type="range">
-                      <output for="sliderWithValue">{{guest.hinicial}}:00</output> &nbsp &nbsp &nbsp
-                      <br><strong>Fim &nbsp &nbsp </strong><input class="slider is-yellow" step="1" min="0" max="23" v-model="guest.hfinal" type="range">
-                      <output for="sliderWithValue is-sucess">{{guest.hfinal}}:59</output>
+                      <div class="blocks"> <div class="col">
+                        <label class="radio"><input type="radio" name="days" value="0-6" v-model="guest.days" checked> Todos os dias</label><br>
+                        <label class="radio"><input type="radio" name="days" value="1-5" v-model="guest.days"> Segunda a Sexta</label><br>
+                        <label class="radio"><input type="radio" name="days" value="6-6" v-model="guest.days">Sábado</label><br>
+                        <label class="radio"><input type="radio" name="days" value="0-0" v-model="guest.days">Domingo</label><br>
+                      </div><div class="col">
+                        <label class="radio"><input type="radio" name="days" value="1-1" v-model="guest.days">Segunda</label><br>
+                        <label class="radio"><input type="radio" name="days" value="2-2" v-model="guest.days">Terça</label><br>
+                        <label class="radio"><input type="radio" name="days" value="3-3" v-model="guest.days">Quarta</label><br>
+                        <label class="radio"><input type="radio" name="days" value="4-4" v-model="guest.days">Quinta</label><br>
+                        <label class="radio"><input type="radio" name="days" value="5-5" v-model="guest.days">Sexta</label><br>
+                      </div> </div>
+                    </div>
+                    <label class="label">Horários permitidos:</label>
+                    <strong>Inicio &nbsp</strong><input class="slider is-yellow" step="1" min="0" max="23" v-model="guest.hinicial" type="range">
+                    <output for="sliderWithValue">{{guest.hinicial}}:00</output> &nbsp &nbsp &nbsp
+                    <br><strong>Fim &nbsp &nbsp </strong><input class="slider is-yellow" step="1" min="0" max="23" v-model="guest.hfinal" type="range">
+                    <output for="sliderWithValue is-sucess">{{guest.hfinal}}:59</output>
                   </div>
-                  <button class="button is-primary" v-on:click="addGuest()" >Salvar</button>
+                  <button class="button is-primary" v-on:click="addGuest()" >Salvar</button><p>&nbsp</p>
                 </div>              
                 <div id="qrguest"> <div class="cont" v-if="see.qrGuest"><!-- QR CODE do visitante-->
-                  <br><strong> QRcode gerado:</strong>&nbsp; <span class="icon has-text-info" @click="see.qrGuest = false" ><i class="fas fa-window-close" title="Fechar QrCode"></i></span><br>
-                  <canvas id="canvas"></canvas>
+                  <br><strong> QRcode gerado:</strong>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+                  <span class="icon has-text-info" @click="see.qrGuest = false" >
+                    <i class="fas fa-window-close" title="Fechar QrCode"></i>
+                  </span><br>
+                  <br><canvas id="canvas"></canvas>
                   <div class="linkQR"> <a id="link" href="javascript:saveImage()">Salve a imagem </a> e envie para o visitante.<br>&nbsp</div>
                 </div></div>
                 <div class="table-container">
-                  <div class="first-line guest" id="visita"><div class="table-c"> Nome </div><div class="table-c"> Criado em </div><div class="table-c">Validade </div></div>
+                  <div class="first-line guest" id="visita"><div class="table-c"> Nome </div><div class="table-c"> Criado em </div><div class="table-c">Permissão </div></div>
                   <div class="grid div-table-line" id="visita" v-for="n in myguests" :key="n['dtcreated']">
                   <div class="table-c">
                     {{n.firstname}} <br>
@@ -127,8 +142,8 @@
                     <span class="icon"><a  @click="delGuest(n.qrcode)"><i class="fas fa-trash has-text-danger" title="Excluir usuário"></i></a></span>
 
                   </div>
-                  <div class="table-c"> {{n.dtcreated | date2br(0,'dt') }} </div><div class="table-c">{{n.dtcreated | date2br(n.validity)}} </div></div>
-                  <div class="last-line guest">&nbsp</div>
+                  <div class="table-c"> {{n.dtcreated | date2br(0,'dt') }} </div><div class="table-c">{{n.perm | permissao}} </div></div>
+                  <div class="last-line">&nbsp</div>
                 </div>
               
             </div> <!-- Div guest -->
@@ -147,7 +162,7 @@
               <div class="table-container">
                     <div class="first-line" id="registro"><div class="table-c"> Data </div><div class="table-c"> Nome </div><div class="table-c">Situação </div></div>
                     <div class="grid div-table-line" id="registro" v-for="n in access" :key="n['date-time']"><div class="table-c"> {{n.dtBR}} </div><div class="table-c"> {{n.firstname}} </div><div class="table-c">{{n.stateBR}} </div></div>
-                    <div class="last-line">&nbsp</div>
+                    <div class="last-line"><a @click="regStart()"><i class="fas fa-angle-down fa-2x has-text-success"></i></a> &nbsp</div>
                   </div>
             </div>
           </div> <!-- Div container -->
