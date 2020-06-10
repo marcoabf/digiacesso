@@ -332,10 +332,10 @@ module.exports = {
 //-------------------------------------------------------------
 
 function stateBr (obj) { // traduz o campo state de EN para BR
-  switch (obj.state) {
-    case 'granted': obj.stateBR = "Liberado"; break;
-    case 'blocked': obj.stateBR = "Bloqueado"; break;
-    case 'doublepass': obj.stateBR = "Dupla passagem detectada!"; break;
+  switch (obj) {
+    case 'granted': obj = "Liberado"; break;
+    case 'blocked': obj = "Bloqueado"; break;
+    case 'doublepass': obj = "Dupla passagem detectada!"; break;
   }
   return obj;
 }
