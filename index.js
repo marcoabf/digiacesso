@@ -32,7 +32,7 @@ app.use(session({ //inicializando express-session
     secret: 'ctrlgrn',
     resave: false,
     saveUninitialized: true,
-    cookie:{ maxAge:1000*60*60*12 } //12 horas
+    cookie:{ maxAge:1000*60*60*24 } //24 horas
   }));
 
 app.use('/', (req, res, next) => {console.log("requisição recebida"); next();}) // msg da raiz

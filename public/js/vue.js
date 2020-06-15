@@ -26,7 +26,7 @@ function stateBr (obj) { // traduz o campo state de EN para BR
 
 function gerarQR (text) { //gera qrcode no elemento canvas
   console.log('Gerando QRcode: ' + text);
-  setTimeout(function(){ QRCode.toCanvas(document.getElementById('canvas'), text, { width: 200 }, function (error) {
+  setTimeout(function(){ QRCode.toCanvas(document.getElementById('canvas'), text, { width: 300 }, function (error) {
     if (error) console.error(error)
   });}, 200);
 }
@@ -264,6 +264,8 @@ var app = new Vue({
   });
 
   async function notifyMe() { //verifica se o navegador é compatível    
+    
+    if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {alert('Its Safari');}
     if (!('serviceWorker' in navigator)) {
       console.log('Service worker não é suportado por esse navegador!'); 
       return;

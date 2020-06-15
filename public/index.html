@@ -126,9 +126,9 @@
                   <button class="button is-primary" v-on:click="addGuest()" >Salvar</button><p>&nbsp</p>
                 </div>              
                 <div id="qrguest"> <div class="cont" v-if="see.qrGuest"><!-- QR CODE do visitante-->
-                  <br><strong> QRcode gerado:</strong>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-                  <span class="icon has-text-info" @click="see.qrGuest = false" >
-                    <i class="fas fa-window-close" title="Fechar QrCode"></i>
+                  <div class='has-text-right'> <a @click="see.qrGuest = false"><i class="fas fa-window-close fa-2x has-text-danger" title="Fechar QrCode"></i></a>&nbsp;</div>
+                  <br><strong> QRcode gerado.</strong>
+                  <span class="icon has-text-info">
                   </span><br>
                   <br><canvas id="canvas"></canvas>
                   <div class="linkQR"> <a id="link" href="javascript:saveImage()">Salve a imagem </a> e envie para o visitante.<br>&nbsp</div>
@@ -161,7 +161,7 @@
               <h1 class="title">Registros de entrada e saída:</h1>
               <div class="table-container">
                     <div class="first-line" id="registro"><div class="table-c"> Data </div><div class="table-c"> Nome </div><div class="table-c">Situação </div></div>
-                    <div class="grid div-table-line" id="registro" v-for="n in access" :key="n['date-time']"><div class="table-c"> {{n.dtBR}} </div><div class="table-c"> {{n.firstname}} </div><div class="table-c">{{n.stateBR}} </div></div>
+                    <div class="grid div-table-line" id="registro" v-for="n in access" :key="n['date-time']" :style="(n.stateBR=='Liberado')?{color:'darkgreen'}:{color:'red'}"><div class="table-c"> {{n.dtBR}} </div><div class="table-c"> {{n.firstname}} </div><div class="table-c">{{n.stateBR}} </div></div>
                     <div class="last-line"><a @click="regStart()"><i class="fas fa-angle-down fa-2x has-text-success"></i></a> &nbsp</div>
                   </div>
             </div>
