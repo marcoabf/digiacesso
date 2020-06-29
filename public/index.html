@@ -161,7 +161,7 @@
               <h1 class="title">Registros de entrada e saída:</h1>
               <div class="table-container">
                     <div class="first-line" id="registro"><div class="table-c"> Data </div><div class="table-c"> Nome </div><div class="table-c">Situação </div></div>
-                    <div class="grid div-table-line" id="registro" v-for="n in access" :key="n['date-time']" :style="(n.stateBR=='Liberado')?{color:'darkgreen'}:{color:'red'}"><div class="table-c"> {{n.dtBR}} </div><div class="table-c"> {{n.firstname}} </div><div class="table-c">{{n.stateBR}} </div></div>
+                    <div class="grid div-table-line" id="registro" v-for="n in access" :key="n['date-time']" :style="(n.stateBR=='Liberado')?{color:'darkgreen'}:{color:'red', 'background-color':'rgb(255, 235, 235)'}"><div class="table-c"> {{n.dtBR}} </div><div class="table-c"> {{n.firstname}} </div><div class="table-c">{{n.stateBR}} </div></div>
                     <div class="last-line"><a @click="regStart()"><i class="fas fa-angle-down fa-2x has-text-success"></i></a> &nbsp</div>
                   </div>
             </div>

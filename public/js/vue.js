@@ -1,7 +1,8 @@
 //import { text } from "body-parser";
 //axios.defaults.baseURL = 'http://localhost:3000';
-//axios.defaults.baseURL = 'http://192.168.1.110:3000';
+//axios.defaults.baseURL = 'http://192.168.1.108:3000';
 axios.defaults.baseURL = 'https://digiacesso.net/';
+//axios.defaults.baseURL = 'http://testipv6maf.ddns.net:3000/';
 axios.defaults.withCredentials = true;
 
 

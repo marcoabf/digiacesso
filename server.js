@@ -135,7 +135,7 @@ module.exports = {
   }, //---------------------utech
   guests(req, res){
     //lista visitantes
-    query = "SELECT * FROM users WHERE responsible=? AND type<10 ORDER BY dtcreated DESC" ;  //buscar dados das controladoras;
+    query = "SELECT * FROM users WHERE responsible=? AND type<10 ORDER BY dtcreated DESC" ;  //dados dos visitantes from user;
     pool.query(query,[req.body.userID], function (error, results, fields) {
       if (error) throw error;  
       res.send(results);  
