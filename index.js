@@ -12,15 +12,11 @@ const app = express();
 //const router = express.Router()
 
 app.get('*', (req, res, next) => {
-    if (req.headers['x-forwarded-proto'] != 'https') {
-        // checa se o header é HTTP ou HTTPS
-        //res.redirect("https://" + req.headers.host + req.url);
-        console.log(req.headers.host)
-        next();
-        // faz o redirect para HTTPS
+    if (req.headers['x-forwarded-proto'] != 'https' && req.headers.host=='digiacesso.net') {
+        // checa se o header é HTTP ou HTTPS 
+        res.redirect("https://" + req.headers.host + req.url); // faz o redirect para HTTPS
     } else {
-        next();
-        // segue com a sequência das rotas
+        next(); // segue com a sequência das rotas
     }
 });
 
