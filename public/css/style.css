@@ -105,9 +105,6 @@ body {
   border-color: green;
   background-color: #ffffffe1;
 }
-.div-table-line:hover {
-  background-color: #dcfcdf;
-}
 
 #visita { grid-template-columns: 65% 0% 35%;}
 #registro{ grid-template-columns: 30% 40% 30%;  }
