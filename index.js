@@ -9,8 +9,8 @@ const cors = require('cors');
 var server = require('./server');
 var port = process.env.PORT || 3000;
 const app = express();
-//const router = express.Router()
 
+//força redirecionamento HTTPS
 app.get('*', (req, res, next) => {
     if (req.headers['x-forwarded-proto'] != 'https' && req.headers.host=='digiacesso.net') {
         // checa se o header é HTTP ou HTTPS 
@@ -20,6 +20,7 @@ app.get('*', (req, res, next) => {
     }
 });
 
+// POLÍTICAS CORS
 var corsOptions = {
     origin: true,
     credentials: true };
@@ -29,29 +30,32 @@ app.use(cors(corsOptions));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use(favicon());
+app.use(favicon(__dirname + '/public/img/tfavicon.png')); // Define icone da página
 app.use(logger('dev'));
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
-
-
 app.use(express.static(path.join(__dirname, 'public'))); //define pasta 'public' como página web estática
-app.use('/node_modules', express.static('node_modules'))
-app.use(session({ //inicializando express-session
+app.use('/node_modules', express.static('node_modules')) // cria acesso ao node_modules para página estática
+
+//inicializando express-session
+app.use(session({ 
     secret: 'ctrlgrn',
     resave: false,
     saveUninitialized: true,
-    cookie:{ maxAge:1000*60*60*24 } //24 horas
+    cookie:{ maxAge:1000*60*60*72 } //72 horas
   }));
 
 app.use('/', (req, res, next) => {console.log("requisição recebida"); next();}) // msg da raiz
-//app.use('/', routes);
 app.post('/', server.qLogin);   // resposta de solicitações de login
-//app.use('/users', users);
+app.get('/admin', (req, res) => {res.redirect('./admin.html'); });
 app.get('/auth', (req, res) => {res.send('Necessário Nome e Password!'); });
 app.post('/auth', server.qLogin);   // resposta de solicitações de login
 app.post('/access', server.access);
 app.get('/dologout', server.doLogout);    // verifica o login e faz o logout do usuário
+app.post('/mail2newpassword', server.mail2NewPassword);
+app.get('/forgotpass', server.forgotPass); // requisição de mudança de password recebida pelo email
+app.post('/forgotpass', server.forgotPass); // requisição de mudança de password de vuePass.js
+app.post('/changepass', server.changePass); //muda o password do cliente
 app.post('/guests', server.guests);  //lista visitantes de um usuário 
 app.post('/addguest', server.addGuest);  //cadastra um visitante na leitora 
 app.post('/delguest', server.delGuest);

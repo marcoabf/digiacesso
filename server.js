@@ -3,6 +3,7 @@ var randomstring = require('randomstring');
 const mysql = require('mysql2');
 var port = process.env.DB_PORT || 3306;
 const webpush = require('web-push');
+var nodemailer = require('nodemailer');
 const pool = mysql.createPool({
   connectionLimit : 10,
   host     : 'mysql669.umbler.com',
@@ -13,7 +14,8 @@ const pool = mysql.createPool({
 });
 const promisePool = pool.promise();
 const axios = require('axios');
-//var row = [];
+
+
 const vapidKeys = {
   publicKey:'BMQhKi9b9wgTSELzr1dKaGtIcv1wXGH9TZuZ6I9s7OCLGCPlZrsBczpB2rasO6TCbDqvxh8hnzPOGu4C-IM7oXw',
   privateKey: 'B_-NWqSNWz_Gh2WkzxbO5RY_kMymFj0LXzX9Tq4PH1g'
@@ -88,10 +90,114 @@ module.exports = {
     req.session.userid = '';
     req.session.loggedin = false;
     res.end();
-  },  
+  }, 
+  async mail2NewPassword(req, res){
+    //if (isEmail(req.body.email)) {} //checa se o formato de email é aceito
+    var userId;
+    var transporter = nodemailer.createTransport({
+      host: "smtp.uhserver.com",
+      port: 587,
+      secure: false, // upgrade later with STARTTLS
+      auth: {
+        user: "contato@accontrol.com.br",
+        pass: "ctrl0400"
+      }
+    });
+    
+    let query = 'SELECT * FROM users WHERE email=?';
+    const rowUser = await promisePool.query(query,[req.body.email])
+      .then( ([rows,fields]) => { 
+        console.log(rows.length);
+        if (rows.length>0) { 
+          userId = rows[0].id;          
+        } else {
+          res.send("Este e-mail não está cadastrado para nenhum usuário.");
+        }
+      })
+      .catch(err => console.log(err));
+    if (userId != null) {
+      let dtc = moment().format("YYYY-MM-DD HH:mm:ss"); //horário atual .subtract(3, 'h')
+      let key = randomstring.generate(8);
+      key = key + userId;
+      let link = 'https://www.digiacesso.net/forgotpass/?link=' + key;
+      let mailContent = '<h1> _digiACESSO </h1> <p> Como solicitado, segue o link para mudança de senha. <BR> ';
+      mailContent += '<a href="' + link + '"> ' + link + '</a>';
+      //when changing email then object = 1 
+      let query2 = "INSERT INTO pending (object, idobject, dtlimit, data) VALUES (1, ?, ?, ?)";
+      const insertPendency = await promisePool.query(query2, [userId, dtc, key])
+        .then( ([rows,fields]) => { 
+          console.log('inserindo...');
+          console.log(rows);
+          var mailOptions = {
+            from: '"digiACESSO" <contato@accontrol.com.br>',
+            to: req.body.email,
+            subject: 'Mudança de senha',
+            html: mailContent
+          };
+          transporter.sendMail(mailOptions, function(error, info){ //enviando o email
+            if (error) {
+              console.log(error);
+              res.send("Seu e-mail não pode ser enviado. Tente novamente.");
+            } else {
+              console.log('Email sent: ' + info.response);
+              res.send("E-mail enviado com sucesso!");
+            }
+          });
+        })
+        .catch(err => console.log(err));
+    }
+  }, 
+  async forgotPass(req, res) { // ---- requisição de novo password 
+    console.log("verificando a requisição de mudança de senha...");
+    var update = false;
+    var link= req.query.link; // pega parametro link da requisição get
+    if (req.body.data!=null) { link = req.body.data; } // pega parametro link da requisição post
+    let query = 'SELECT * FROM pending WHERE data=?';
+    if (link == null) link='0';
+      const rowUser = await promisePool.query(query,[link])
+        .then( ([rows,fields]) => { 
+          if (rows.length>0) { 
+            let timeLimit = moment().subtract(10, 'm').format("YYYY-MM-DD HH:mm:ss"); // limit p/ mudar a senha: 10 minutos
+            var date1 = rows[0].dtlimit + ""; 
+            var date2 = date1.split(".");
+            date1 = date2[0];
+            console.log(timeLimit);
+            console.log (date1);  
+            if (moment(timeLimit).isAfter(date1)) {
+              console.log('isAfter');
+              res.send('Sessão expirada. Faça uma nova solicitação.');
+            } else if (req.body.password==null) {
+              console.log('isBefore'); 
+              res.redirect('../pass.html?data='+ link); 
+            } else { update = true; } // se password != null então senha pode ser atualizada
+          } else {
+            console.log("Não foi possível identificar a requisição.");
+          }
+        })
+        .catch(err => console.log(err));
+    if (update === true) { 
+      console.log("update true");
+      let userId = req.body.data.slice(8);
+      let query = "UPDATE users SET password=? WHERE id=?";
+      const rowInsert = await promisePool.query(query,[req.body.password, userId])
+      .then( ([rows,fields]) => { 
+        console.log(rows[0]);
+      })
+      .catch(err => console.log(err));
+    }
+  },
+  async changePass(req, res) { // ---- requisição de novo password dentro da aplicaçao
+    console.log("mudando a senha dentro do app...");
+    let query = "UPDATE users SET password=? WHERE id=?";
+    const rowInsert = await promisePool.query(query,[req.body.password, req.session.userid])
+      .then( ([rows,fields]) => { 
+        console.log(rows[0]);
+        res.send("Senha alterada!")
+      })
+        .catch(err => {console.log(err); res.send("Não foi possível alterar a senha!")});
+  },
   async utech(req, res){  //------utech ---- recebimento de eventos das controladoras
     console.log("utech");
-    console.log('headers:');
     console.log(req.headers);
     console.log('query:');
     console.log(req.query);

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>digiACESSO</title>
+    <link rel="stylesheet" href="./node_modules/bulma/css/bulma.min.css"> 
+    <link rel="stylesheet" href="./node_modules/bulma-slider/dist/css/bulma-slider.min.css"> 
+    <link rel="stylesheet" href="./css/style.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  </head>
+  <!-- Iniciando -->
+  <body>
+    <div id="app">
+      <section class="hero is-primary" style="background-image: linear-gradient(#008040, #00cc66);">
+        <div class="header" id="cabecalho">
+          <div class="container">
+            <h1 class="title is-family-code"> _digiACESSO </h1>
+            <h2 class="subtitle is-family-code"> Acesso simples e seguro! </h2>
+            <div class="login"><i class="fas fa-user"></i>
+              &nbsp {{api.firstname}} <span v-if="showbtn"><a v-on:click='doLogout()'> - Sair</a></span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="section"> <!--Starting Section-->
+        <div class="container">
+            <div id="startPage" v-if="showbtn">
+              <button id="btn_user" class="button  is-medium" @click="seeOne('userPage')" ><i class="fas fa-user"></i>&nbsp Usuário</button>
+              <button id="btn_guest" class="button is-medium"  ><i class="fas fa-user-friends"></i>&nbsp Condomínio</button>
+              <br>
+            </div>  <!-- fim da start page-->
+            <div class="load" v-if="loading">
+              <div class="spinout"></div>
+              <div class="spin"></div>
+              <div class="loading">Carregando</div>
+            </div>
+            <div id="login" v-if="see.loginPage"> <!-- --- login page -->
+              <h1 class="title">Entrada de Administrador:</h1>
+              <div class="field">
+                <p class="control has-icons-left has-icons-right">
+                  <input id="login_first_input" class="input" type="text" placeholder="Nome de usuário" v-model="login.username">
+                  <span class="icon is-small is-left">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <span class="icon is-small is-right">
+                    <i class="fas fa-check"></i>
+                  </span>
+                </p>
+              </div>
+              <div class="field">
+                <p class="control has-icons-left">
+                  <input class="input" type="password" placeholder="Senha" v-model="login.password">
+                  <span class="icon is-small is-left">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                </p>
+              </div>
+              <div class="field">
+                <p class="control">
+                  <button class="button is-success" v-on:click="loginAdminCheck()">
+                    Login
+                  </button>
+                </p>
+              </div>
+            </div> <!-- Div Login -->
+ 
+          </div> <!-- Div container -->
+          <br>  
+      </section>
+    </div> <!--Fim APP--> 
+
+    
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p>
+          Entre em contato para criar um usuário.
+        </p>
+      </div>
+    </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment-with-locales.min.js"></script>
+    <script src="/node_modules/vue/dist/vue.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> 
+    <script src="./js/vueAdmin.js"></script>
+  </body>
+</html>

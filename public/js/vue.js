@@ -1,6 +1,6 @@
 //import { text } from "body-parser";
 //axios.defaults.baseURL = 'http://localhost:3000';
-//axios.defaults.baseURL = 'http://192.168.1.108:3000';
+//axios.defaults.baseURL = 'http://192.168.1.104:3000';
 axios.defaults.baseURL = 'https://digiacesso.net/';
 //axios.defaults.baseURL = 'http://testipv6maf.ddns.net:3000/';
 axios.defaults.withCredentials = true;
@@ -40,7 +40,6 @@ function saveImage() // salva a imagem do qrCode na pasta local do usuário
   link.click();
 }  
 
-
 var pages = {
     startPage: false,
     loginPage: false,
@@ -49,7 +48,10 @@ var pages = {
     addGuest: false,
     qrGuest: true,
     openDoorPage: false,
-    regPage: false
+    regPage: false,
+    passwordPage: false, // dentro da pagina de usuário
+    about: false,
+    changePassword: false // na página de login
 };
 var guests = {
     name: '',
@@ -59,10 +61,23 @@ var guests = {
     lifecount: 0,
     visitor: true
 };
+
 var login = {
     username: '',
+    email: '',
     password: ''
 };
+
+Vue.component('table-array', {
+  props: ['title', 'record'],
+  template: '#tabela'
+});
+
+Vue.component('my-input', {
+  props: ['title', 'field', 'type', 'icon'],
+  template: '#campo-de-entrada'
+});
+
 
 var app = new Vue({
     el: '#app',
@@ -70,6 +85,7 @@ var app = new Vue({
       message: 'Lista de usuários:',
       loading: false,
       showbtn: false,
+      newPass: [],
       api: [], //dados do usuário
       ctrl: [],
       access: [], //registros de entrada e saída
@@ -77,8 +93,7 @@ var app = new Vue({
       doorSelected: '',
       see: pages,
       guest: guests,
-      act1: ' is-active',
-      regLimit: 0,
+      regLimit: 0, // para aumentar o limite de registros quando 
       login: login
     },
     mounted: async function () {
@@ -151,7 +166,8 @@ var app = new Vue({
         this.see.qrGuest = true;
         gerarQR(qr);
       },
-      loginCheck: async function () {
+      loginCheck: async function () { // do login 
+          console.log(this.login);
           const response = await axios.post('/auth', {username: this.login.username, password: this.login.password});
           console.log (response.data);
           if (typeof response.data === 'string') {
@@ -168,14 +184,27 @@ var app = new Vue({
             this.showbtn = true;
           }
       },
-      doLogout: async function () { 
+      doLogout: async function () { // do logout
           const response = await axios.get('/dologout');
           this.api = [];
           this.seeOne('loginPage');
           this.showbtn = false;
       },
-      mountGuests: async function () {
-        //busca tabela do banco de dados
+      sendMailToNewPassword: async function () {
+        const response = await axios.post('/mail2newpassword', {email: this.login.email});
+        alert(response.data);
+      },
+      changePassword: async function () {
+        console.log("Verificando nova senha");
+        if (this.newPass[0]!==this.newPass[1]) alert("As senhas nos dois campos não conferem!");
+        else if (this.newPass[0].length<8) alert("A senha deve conter pelo menos 8 digitos!");
+        else {
+          const response = await axios.post('/changepass', {password: this.newPass[0]});
+          alert(response.data);
+          this.see.passwordPage=false;
+        } 
+      },
+      mountGuests: async function () { // mount table with all visitors linked to actual user
         this.seeOne('guestPage');
         this.loading = true;
         const response = await axios.post('/guests', {userID: this.api.id, limit:25}); //limit => num máximo de registros
@@ -183,7 +212,7 @@ var app = new Vue({
         this.myguests=response.data;
         this.loading = false;
       },
-      addGuest: async function () {
+      addGuest: async function () { // insert new user to DB and controller
           console.log('lifecount: ' + this.guest.lifecount);
         const response = await axios.post('/addguest', {
           name: this.guest.name,
@@ -206,7 +235,7 @@ var app = new Vue({
           this.mountGuests();
         }
       },
-      delGuest: async function (qr) {
+      delGuest: async function (qr) { // delete visitor (guest)
         if(confirm("Tem certeza que deseja excluir o visitante?")==true) {
           const response = await axios.post('/delguest', {qrcode: qr}); //limit => num máximo de registros
           console.log(response.data);
@@ -216,7 +245,7 @@ var app = new Vue({
           this.mountGuests();
         }
       },
-      openDoor: async function () { // gera requisição para abrir a porta
+      openDoor: async function () { // send request to open specific door
         console.log(this.doorSelected);
         if(confirm("Tem certeza que deseja abrir esse acesso?")==true)
         {
@@ -227,7 +256,7 @@ var app = new Vue({
             } 
         }
       },
-      regStart: async function () { // carrega página de registros de acesso
+      regStart: async function () { // return array with access records
         this.seeOne('regPage');
         this.loading = true;
         console.log(this.api.id);

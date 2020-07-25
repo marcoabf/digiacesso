@@ -11,9 +11,10 @@
   </head>
   <!-- Iniciando -->
   <body>
+
     <div id="app">
-      <section class="hero is-primary">
-        <div class="hero-body">
+      <section class="hero is-primary" style="background-image: linear-gradient(#008040, #00cc66);">
+        <div class="header" id="cabecalho">
           <div class="container">
             <h1 class="title is-family-code"> _digiACESSO </h1>
             <h2 class="subtitle is-family-code"> Acesso simples e seguro! </h2>
@@ -40,50 +41,49 @@
             </div>
             <div id="login" v-if="see.loginPage"> <!-- --- login page -->
               <h1 class="title">Entrada de usuário:</h1>
+              <my-input title="Usuário" v-model="login.username" type="text" icon="fas fa-user"></my-input>
+              <my-input title="Senha" v-model="login.password" type="password" icon="fas fa-lock"></my-input>
               <div class="field">
-                <p class="control has-icons-left has-icons-right">
-                  <input id="login_first_input" class="input" type="text" placeholder="Nome de usuário" v-model="login.username">
-                  <span class="icon is-small is-left">
-                    <i class="fas fa-user"></i>
-                  </span>
-                  <span class="icon is-small is-right">
-                    <i class="fas fa-check"></i>
-                  </span>
-                </p>
-              </div>
-              <div class="field">
-                <p class="control has-icons-left">
-                  <input class="input" type="password" placeholder="Senha" v-model="login.password">
-                  <span class="icon is-small is-left">
-                    <i class="fas fa-lock"></i>
-                  </span>
-                </p>
-              </div>
-              <div class="field">
-                <p class="control">
-                  <button class="button is-success" v-on:click="loginCheck()">
-                    Login
-                  </button>
-                </p>
+                  <button class="button is-success" @click="loginCheck()"> Login </button>
+                  <div><a @click="seeOne('changePassword')"> Esqueceu sua senha? </a></div>
               </div>
             </div> <!-- Div Login -->
+            <div class="janela" v-if="see.changePassword" style="background-image: linear-gradient(#fff, #fff, green);">
+              <div class='has-text-right' style="margin: 20px;" >  <span class="icon is-small is-right"> <a @click="seeOne('loginPage')"><i class="fas fa-window-close fa-2x has-text-danger" title="Fechar"></i></a>&nbsp; </span> </div>
+              <div class="container" style="border-left: 100px;"></div>
+              <br><br><br><h1 class="title">Solicitação de nova senha</h1>
+              <br><h1 class="subtitle">Insira seu e-mail para enviarmos o link mudança de senha:</h1>
+              <br><input class="input" v-model="login.email" type="text" placeholder="E-mail" style="width: 400px;"></input>
+              <br><br></nr><button class="button is-success is-medium" @click="sendMailToNewPassword">Enviar</button>
+          </div>
+          <div class="janela" v-if="see.about" style="background-image: linear-gradient(#fff, #fff, green);">
+            <div class='has-text-right' style="margin: 20px;" >  <span class="icon is-small is-right"> <a @click="seeOne('loginPage')"><i class="fas fa-window-close fa-2x has-text-danger" title="Fechar"></i></a>&nbsp; </span> </div>
+            <div class="container" style="padding: 20px; padding-top: 50px;">
+              <h1 class="subtitle">digiACESSO</h1>
+              <span>
+                DigiACESSO é uma plataforma de controle de acesso para condomínios residenciais e comerciais.
+                Todo o sistema, envolvendo equipamentos e acesso à plataforma, pode ser contratada pela AC Control <a href="http://www.accontrol.com.br">www.accontrol.com.br</a>.
+              </span>
+            </div>
+          </div>
             <div id="user" v-if="see.userPage"> <!-- --- user page -->
               <div class="table-container">
                 <h1 class="title">Seus dados:</h1>
-                <table class="table is-hoverable">
-                  <tr>
-                    <td><strong>Nome de usuário: </strong></td><td> {{api.username}} </td>
-                  </tr><tr>  
-                    <td><strong>Tipo: </strong></td><td> {{userType(api.type)}} </td>
-                  </tr><tr>      
-                    <td><strong>Nome completo:</strong></td><td>{{api.firstname + " " + api.lastname}} </td>
-                  </tr><tr> 
-                    <td><strong>Email:</strong></td><td>{{api.email}}</td>
-                  </tr><tr> 
-                    <td><strong>Condom.:</strong></td><td>{{api.condoName}}</td>
-                  </tr>
-                </table>
-                <button class="button is-danger is-light" @click="this.alert('Ainda não é possível trocar a senha!')">Trocar Senha</button>
+                <table-array title="Usuário:" :record="api.username"></table-array>
+                <table-array title="Tipo:" :record="userType(api.type)"></table-array>
+                <table-array title="Nome:" :record="api.firstname + ' ' + api.lastname"></table-array>
+                <table-array title="Email:" :record="api.email"></table-array>
+                <table-array title="Condomínio:" :record="api.condoName"></table-array>
+                <p> &nbsp </p>
+                <button class="button is-danger is-light" @click="see.passwordPage=true">Trocar Senha</button>
+                <div id="pwd" v-if="see.passwordPage">
+                  <br>
+                  <h1 class="subtitle">Insira a nova Senha: </h1>
+                  <my-input title="Nova Senha" v-model="newPass[0]" type="password" icon="fas fa-lock"></my-input>
+                  <my-input title="Repetir senha" v-model="newPass[1]" type="password" icon="fas fa-lock"></my-input>
+                  <button class="button is-success" v-on:click="changePassword()"> Salvar Senha </button>
+                  <br><br>
+                </div>
                 <button class="button is-danger" @click="subscribe()">Cadastrar notif.</button>
                 <button class="button is-danger" @click="testSubs()">Enviar teste</button>
               </div>
@@ -125,7 +125,7 @@
                   </div>
                   <button class="button is-primary" v-on:click="addGuest()" >Salvar</button><p>&nbsp</p>
                 </div>              
-                <div id="qrguest"> <div class="cont" v-if="see.qrGuest"><!-- QR CODE do visitante-->
+                <div id="qrguest"> <div class="janela" v-if="see.qrGuest"><!-- QR CODE do visitante-->
                   <div class='has-text-right'> <a @click="see.qrGuest = false"><i class="fas fa-window-close fa-2x has-text-danger" title="Fechar QrCode"></i></a>&nbsp;</div>
                   <br><strong> QRcode gerado.</strong>
                   <span class="icon has-text-info">
@@ -140,7 +140,6 @@
                     {{n.firstname}} <br>
                     <span class="icon"><a  @click="showQR(n.qrcode)" ><i class="fas fa-qrcode has-text-info" title="QrCode"></i></a></span> 
                     <span class="icon"><a  @click="delGuest(n.qrcode)"><i class="fas fa-trash has-text-danger" title="Excluir usuário"></i></a></span>
-
                   </div>
                   <div class="table-c transp"> {{n.dtcreated | date2br(0,'dt') }} </div><div class="table-c">{{n.perm | permissao}} </div></div>
                   <div class="last-line">&nbsp</div>
@@ -172,22 +171,50 @@
             <label for="switch-bg"></label>
           </div>
       </section>
-    </div> <!--Fim APP--> 
-
     
     <footer class="footer">
       <div class="content has-text-centered">
+        <div class = "has-text-centered"> 
+          <span class="icon is-large is-left has-text-info" style="font-size: 2em;">
+            <i class="fas fa-info-circle"></i>
+          </span><br>
+          <a @click="seeOne('about')"> Sobre o digiACESSO </a> 
+          <br> &nbsp
+        </div>
         <p>
           Entre em contato para criar um usuário.
         </p>
       </div>
     </footer>
+  </div> <!--Fim APP--> 
+    <!-- Templates --------------------------- -->
+    <template id="tabela">
+      <div>
+        <div class="div-table-array-line" style="grid-template-columns: 40% 60%;">
+          <div class="table-col" ><strong> {{title}} </strong></div>
+          <div class="table-col"> {{record}} </div>
+        </div>
+      </div>
+    </template>
+
+    <template id="campo-de-entrada">
+      <div class="field">
+        <p class="control has-icons-left">
+          <input class="input" :type="type" :placeholder="title" :value="field" v-on:input="$emit('input', $event.target.value)">
+          <span class="icon is-small is-left">
+            <i :class="icon"></i>
+          </span>
+        </p>
+      </div>    
+    </template>
+  </div>
+
+
     <script src="/node_modules/qrcode/build/qrcode.js"></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment-with-locales.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
     <script src="/node_modules/vue/dist/vue.js"></script> 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> 
-    <script src="./js/webpush-client.js"></script>
     <script src="./js/vue.js"></script>
   </body>
 </html>

@@ -6,6 +6,15 @@ body {
   margin: 0px;
   border: 0px ;
 }
+#faixa_topo {
+  background-image: linear-gradient(#008040, #00cc66);
+}
+#cabecalho {
+  margin: 10px;
+  margin-top: 20px;
+  
+}
+
 #link {
   text-align: left;
 }
@@ -35,7 +44,7 @@ body {
   width: 360px; 
   grid-template-columns: 50% 50%;
 }
-.cont { //janela do qrcode
+.janela { /*janela do qrcode */
   display: inline-block;
   align-items: center;
   text-align: center;
@@ -46,9 +55,12 @@ body {
   z-index: 1;
   border-style: solid;
   border-width: 3px;
-  background-color: white;
+  border-radius: 5px;
+  background-color: #fff;
 }
-
+.line {
+  display: grid ;
+}
 
 /* Configuração das transições ---------------------------- */
 .fade-enter-active, .fade-leave-active {
@@ -66,9 +78,28 @@ body {
   color: #ffffff;
 }
 
+.div-table-array-line{
+  display: grid;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  width: 100%;
+  border: white;
+  border-bottom: green;
+  border-style: solid;
+  border-width: 1px;
+  background-color: #ffffff;
+  margin-bottom: 10px;
+}
+.div-table-array-line:hover {
+  background-color: rgba(144, 238, 144, 0.26);
+}
+
+
 /* Layout da tabela div ---------------------------- */
 :root {
   --width-small: 100%;
+  --border-div-table: #004d11;
+  --background-div-table-head: #ebfff7;
 }
 .first-line {
   font-size: 1.5 rem;
@@ -78,8 +109,8 @@ body {
   border-top-right-radius: 5px;
   border-style: solid;
   border-width: 1px;
-  border-color: green;
-  background-color: #b2f5ba;
+  border-color: var(--border-div-table);
+  background-color:var(--background-div-table-head);
   padding-top: 10px;
   padding-bottom: 10px;
 }
@@ -88,12 +119,12 @@ body {
   width: var(--width-small);
   height: 35px;
   border-style: solid;
-  border-color: green;
+  border-color: var(--border-div-table);
   border-width: 1px;
   text-align: center;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
-  background-color: #b2f5ba;
+  background-color:var(--background-div-table-head);
 }
 .div-table-line{
   display: grid;
@@ -102,7 +133,7 @@ body {
   width: var(--width-small);
   border-style: solid;
   border-width: 1px;
-  border-color: green;
+  border-color: var(--border-div-table);
   background-color: #ffffffe1;
 }
 
@@ -168,56 +199,4 @@ body {
   position: absolute;
   color: #267e75;
   font-family: sans-serif;
-}
-/* Configuração do botão tipo switch---------------------------- */
-
-.switch {
-  position: absolute;
-  margin-left: -9999px;
-  visibility: hidden;
-}
-.switch + label {
-  display: block;
-  position: relative;
-  cursor: pointer;
-  outline: none;
-  user-select: none;
-}
-.switch--bg + label { 
-  padding: 2px;
-  width: 2.5rem; /* largura do botao*/
-  height: 1.25rem; /* altura do botao*/
-  background-color: #dddddd;
-  border-radius: 1rem;
-}
-/* Bolinha do botão */
-.switch--bg + label:before,
-.switch--bg + label:after {
-  display: block;
-  position: absolute;
-  top: 1px;
-  left: 1px;
-  bottom: 1px;
-  content: '';
-}
-
-.switch--bg + label:before {
-  right: 1px;
-  background-color: #ffe3ae;
-  border-radius: 1.25rem;
-  transition: all 0.4s;
-}
-.switch--bg + label:after {
-  width: 1.25rem;
-  background-color: #fff;
-  border-radius: 100%;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  transition: all 0.4s;
-}
-/* Liga - Desliga */
-.switch--bg:checked + label:before {
-  background-color: #8ce196;
-}
-.switch--bg:checked + label:after {
-  transform: translateX(1.25rem);
 }

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>digiACESSO</title>
+    <link rel="stylesheet" href="./node_modules/bulma/css/bulma.min.css"> 
+    <link rel="stylesheet" href="./node_modules/bulma-slider/dist/css/bulma-slider.min.css"> 
+    <link rel="stylesheet" href="./css/style.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  </head>
+  <!-- Iniciando -->
+    <body>
+        <div id="app">
+            <section class="hero is-primary" id="faixa_topo" >
+                <div class="header" id="cabecalho">
+                <div class="container">
+                    <h1 class="title is-family-code"> _digiACESSO </h1>
+                    <h2 class="subtitle is-family-code"> Acesso simples e seguro! </h2>
+                </div>
+                </div>
+            </section>
+            <div>
+            <br> 
+            <h1 class="subtitle">Insira a nova Senha: </h1>
+                <my-input title="Nova Senha" v-model="newPass[0]" type="password" icon="fas fa-lock"></my-input>
+                <my-input title="Repetir senha" v-model="newPass[1]" type="password" icon="fas fa-lock"></my-input>
+                <button class="button is-success" v-on:click="sendNewPass()"> Salvar Senha </button>
+                <br><br>
+            </div>    
+        </div>
+
+        <template id="campo-de-entrada">
+            <div class="field">
+              <p class="control has-icons-left">
+                <input class="input" :type="type" :placeholder="title" :value="field" v-on:input="$emit('input', $event.target.value)">
+                <span class="icon is-small is-left">
+                  <i :class="icon"></i>
+                </span>
+              </p>
+            </div>    
+          </template>
+
+        <script src="/node_modules/vue/dist/vue.js"></script> 
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> 
+        <script src="./js/vuePass.js"></script>
+    </body>
+</html>
