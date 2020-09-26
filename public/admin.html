@@ -1,87 +1,285 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>digiACESSO</title>
-    <link rel="stylesheet" href="./node_modules/bulma/css/bulma.min.css"> 
-    <link rel="stylesheet" href="./node_modules/bulma-slider/dist/css/bulma-slider.min.css"> 
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./node_modules/bulma/css/bulma.min.css" />
+    <link rel="stylesheet" href="./node_modules/bulma-slider/dist/css/bulma-slider.min.css" />
+    <link rel="stylesheet" href="./css/style.css" />
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
   </head>
   <!-- Iniciando -->
   <body>
     <div id="app">
-      <section class="hero is-primary" style="background-image: linear-gradient(#008040, #00cc66);">
+      <section class="hero is-primary" style="background-image: linear-gradient(#008040, #00cc66)">
         <div class="header" id="cabecalho">
           <div class="container">
-            <h1 class="title is-family-code"> _digiACESSO </h1>
-            <h2 class="subtitle is-family-code"> Acesso simples e seguro! </h2>
-            <div class="login"><i class="fas fa-user"></i>
-              &nbsp {{api.firstname}} <span v-if="showbtn"><a v-on:click='doLogout()'> - Sair</a></span>
+            <h1 class="title is-family-code">_digiACESSO</h1>
+            <h2 class="subtitle is-family-code">Acesso simples e seguro!</h2>
+            <div class="login">
+              <i class="fas fa-user"></i> &nbsp {{api.name}}
+              <span v-if="showbtn"><a v-on:click="doLogout()"> - Sair</a></span>
             </div>
           </div>
         </div>
       </section>
-      <section class="section"> <!--Starting Section-->
+      <section class="section">
+        <!--Starting Section-->
         <div class="container">
-            <div id="startPage" v-if="showbtn">
-              <button id="btn_user" class="button  is-medium" @click="seeOne('userPage')" ><i class="fas fa-user"></i>&nbsp Usuário</button>
-              <button id="btn_guest" class="button is-medium"  ><i class="fas fa-user-friends"></i>&nbsp Condomínio</button>
-              <br>
-            </div>  <!-- fim da start page-->
-            <div class="load" v-if="loading">
-              <div class="spinout"></div>
-              <div class="spin"></div>
-              <div class="loading">Carregando</div>
+          <div id="startPage" v-if="showbtn">
+            <button class="button is-medium" @click="seeOne('userPage')"><i class="fas fa-user"></i>&nbsp Usuário</button>
+            <button class="button is-medium" style="width: 180px" @click="seeOne('condosPage')">
+              <i class="fas fa-home"></i>&nbsp Condomínio
+            </button>
+            <button class="button is-medium" @click="seeOne('condosPage')" style="width: 180px">
+              <i class="fas fa-wrench"></i>&nbsp Manutenção
+            </button>
+            <br />
+          </div>
+          <!-- fim da start page-->
+          <div class="load" v-if="loading">
+            <div class="spinout"></div>
+            <div class="spin"></div>
+            <div class="loading">Carregando</div>
+          </div>
+          <div id="login" v-if="see.loginPage">
+            <!-- --- login page -->
+            <h1 class="title">Entrada de Administrador:</h1>
+            <div class="field">
+              <p class="control has-icons-left has-icons-right">
+                <input id="login_first_input" class="input" type="text" placeholder="Nome de usuário" v-model="login.username" />
+                <span class="icon is-small is-left">
+                  <i class="fas fa-user"></i>
+                </span>
+                <span class="icon is-small is-right">
+                  <i class="fas fa-check"></i>
+                </span>
+              </p>
             </div>
-            <div id="login" v-if="see.loginPage"> <!-- --- login page -->
-              <h1 class="title">Entrada de Administrador:</h1>
-              <div class="field">
-                <p class="control has-icons-left has-icons-right">
-                  <input id="login_first_input" class="input" type="text" placeholder="Nome de usuário" v-model="login.username">
-                  <span class="icon is-small is-left">
-                    <i class="fas fa-user"></i>
-                  </span>
-                  <span class="icon is-small is-right">
-                    <i class="fas fa-check"></i>
-                  </span>
-                </p>
-              </div>
-              <div class="field">
-                <p class="control has-icons-left">
-                  <input class="input" type="password" placeholder="Senha" v-model="login.password">
-                  <span class="icon is-small is-left">
-                    <i class="fas fa-lock"></i>
-                  </span>
-                </p>
-              </div>
-              <div class="field">
-                <p class="control">
-                  <button class="button is-success" v-on:click="loginAdminCheck()">
-                    Login
-                  </button>
-                </p>
-              </div>
-            </div> <!-- Div Login -->
- 
-          </div> <!-- Div container -->
-          <br>  
-      </section>
-    </div> <!--Fim APP--> 
+            <div class="field">
+              <p class="control has-icons-left">
+                <input class="input" type="password" placeholder="Senha" v-model="login.password" />
+                <span class="icon is-small is-left">
+                  <i class="fas fa-lock"></i>
+                </span>
+              </p>
+            </div>
+            <div class="field">
+              <p class="control">
+                <button class="button is-success" v-on:click="loginAdminCheck()">Login</button>
+              </p>
+            </div>
+          </div>
+          <!-- Fim Div Login -->
+          <!-- Página do administrador -->
+          <div class="userPage" v-if="see.userPage">
+            <br />
+            <h1 class="title">Dados do usuário</h1>
+            <base-table title="Empresa:">{{api.company}}</base-table>
+            <base-table title="Usuário:">
+              <field-edt :field="api.username" v-model="api.username" unique="true"> </field-edt>
+            </base-table>
+            <base-table title="Tipo:">{{api.type | adminType}}</base-table>
+            <base-table title="Nome:"><field-edt :field="api.name" v-model="api.name"></field-edt> </base-table>
+            <base-table title="Email:">{{api.email}}</base-table>
+          </div>
+          <!-- Condomínios -->
+          <div class="condos" v-if="see.condosPage">
+            <br />
+            <h1 class="title">Condomínios Cadastrados</h1>
+            <div class="select">
+              <select id="condo-index" style="width: 200px" v-model="condoSelected" @change="condoLoad()">
+                <option v-for="item in condos" :value="item.idcondo" :key="item.condominio">{{item.condominio}}</option>
+              </select>
+            </div>
+            <button class="button is-success" style="margin: 0px 0px; width: 200px">Novo Condomínio</button>
+            <br />
+            &nbsp;
+            <div class="condo-data" v-show="see.condoData">
+              <base-table title="Condomínio:">
+                <field-edt
+                  tbl="condos"
+                  f-name="name"
+                  :t-id="condos[theCondoId].id"
+                  :field="condos[theCondoId].condominio"
+                  v-model="condos[theCondoId].condominio"
+                  unique="true"
+                ></field-edt>
+              </base-table>
+              <base-table title="Endereço:">
+                <field-edt
+                  tbl="condos"
+                  f-name="address"
+                  :t-id="condos[theCondoId].idcondo"
+                  :field="condos[theCondoId].address"
+                  v-model="condos[theCondoId].address"
+                ></field-edt>
+              </base-table>
+            </div>
+            <br />
+            &nbsp;
+            <div class="condo-selected" v-show="see.condoData">
+              <nav class="breadcrumb is-left" aria-label="breadcrumbs">
+                <ul>
+                  <li class="has-text-sucess has-text-weight-bold is-uppercase" :class="{'is-active':!see.equipNav}">
+                    <a class="link-cinza" @click.stop.prevent="see.equipNav=false" href="">Unidades</a>
+                  </li>
+                  <li class="has-text-weight-bold is-uppercase" :class="{'is-active': see.equipNav}">
+                    <a class="link-cinza" @click.stop.prevent="see.equipNav=true" href="">Equipamentos</a>
+                  </li>
+                </ul>
+              </nav>
+              <div class="units" v-show="!see.equipNav">
+                <a @click="see.newUser=!see.newUser" style="margin 10px 0;">Novo Usuário</a>
+                <div class="new-user" v-show="see.newUser">
+                  <div style="margin: 20px 0">
+                    Unidade:
+                    <div class="select is-small">
+                      <select id="unit-id" style="width: 200px" v-model="newUser.unit">
+                        <option v-for="item in units" :value="item" :key="item">{{item}}</option>
+                      </select>
+                    </div>
+                    <input type="text" placeholder="nova unidade" v-model="newUser.unit" style="margin-top: 5px" />
+                  </div>
+                  <br />
+                  Nome: <my-input title="nome" v-model="newUser.firstname" type="text"></my-input> Sobrenome:
+                  <my-input title="sobrenome" v-model="newUser.lastname" type="text"></my-input> Usuário:
+                  <my-input title="usuário" v-model="newUser.username" type="text" icon="fas fa-user"></my-input>
+                  E-mail: <my-input title="e-mail" v-model="newUser.email" type="text" icon="fas fa-envelope"></my-input>
+                  Tipo de Acesso:
+                  <div class="select is-small">
+                    <select id="unit-id" style="width: 150px" v-model="newUser.type" @click="userTypeChanged()">
+                      <option v-for="item in userType" :value="item.index" :key="item.index">{{item.name}}</option>
+                    </select>
+                  </div>
 
-    
+                  <p>&nbsp;</p>
+                  <button class="button is-success is-small" style="margin: 20px 0">Criar usuário</button>
+                </div>
+                <div v-for="item in units">
+                  <!-- Unidades -->
+                  <strong class="is-uppercase"> {{item}} </strong> <br />
+                  <div v-for="usr in unitUsers[item]">
+                    {{usr.firstname}}{{" "+usr.lastname}} <a @click="turnVisib(usr.id)"> + </a>
+                    <div class="acordeao" :id="'user'+usr.id" style="display: none">
+                      <div>
+                        <base-table title="Nome:">
+                          <field-edt
+                            tbl="users"
+                            f-name="firstname"
+                            :t-id="usr.id"
+                            :field="usr.firstname"
+                            v-model="usr.firstname"
+                          ></field-edt>
+                        </base-table>
+                        <base-table title="Sobrenome:">
+                          <field-edt tbl="users" f-name="lastname" :t-id="usr.id" :field="usr.lastname" v-model="usr.lastname"></field-edt>
+                        </base-table>
+                        <base-table title="Usuário:">
+                          <field-edt
+                            tbl="users"
+                            f-name="username"
+                            :t-id="usr.id"
+                            :field="usr.username"
+                            v-model="usr.username"
+                            unique="true"
+                          ></field-edt>
+                        </base-table>
+                        <base-table title="E-mail:">
+                          <field-edt
+                            tbl="users"
+                            f-name="email"
+                            :t-id="usr.id"
+                            :field="usr.email"
+                            v-model="usr.email"
+                            unique="true"
+                          ></field-edt>
+                        </base-table>
+                        <base-table title="Tipo de acesso:">
+                          <field-edt tbl="users" f-name="type" :t-id="usr.id" :field="usr.type" v-model="usr.type"></field-edt>
+                        </base-table>
+                        <base-table title="Cartão de prox.:">
+                          <field-edt tbl="users" f-name="card" :t-id="usr.id" :field="usr.card" v-model="usr.card"></field-edt>
+                        </base-table>
+                        <select v-model="ctrl2read">
+                          <option v-for="ctrl in equipments" :value="ctrl.id">{{ctrl.name}}</option>
+                        </select>
+                        <input type="text" v-model="ctrlCode" style="margin-top: 7px; width: 150px" />
+                        <button class="button is-small is-info">Capturar</button>
+                        <base-table title="Controle veicular:">
+                          <field-edt tbl="users" f-name="rfcode" :t-id="usr.id" :field="usr.rfcode" v-model="usr.rfcode"></field-edt>
+                        </base-table>
+                      </div>
+                    </div>
+                    <br />
+                    &nbsp;
+                    <!-- Fim acordeao usr-->
+                  </div>
+                  <!-- Fim V-For usr-->
+                </div>
+                <!-- Fim V-For item-->
+              </div>
+              <div class="equipments" v-show="see.equipNav">
+                <div v-for="ctrl in equipments">
+                  <!-- Controladoras -->
+                  <strong class="is-uppercase">{{ctrl.name}}</strong>
+                  <br />
+                  {{ctrl.brand}} {{ctrl.model}} <br />
+                  <base-table title="Nome:">
+                    <field-edt tbl="controllers" f-name="name" :t-id="ctrl.id" :field="ctrl.name" v-model="ctrl.name"></field-edt>
+                  </base-table>
+                  <base-table title="Local:">
+                    <field-edt tbl="controllers" f-name="local" :t-id="ctrl.id" :field="ctrl.local" v-model="ctrl.local"></field-edt>
+                  </base-table>
+                  <base-table title="Marca:">
+                    <field-edt tbl="controllers" f-name="brand" :t-id="ctrl.id" :field="ctrl.brand" v-model="ctrl.brand"></field-edt>
+                  </base-table>
+                  <base-table title="Modelo:">
+                    <field-edt tbl="controllers" f-name="model" :t-id="ctrl.id" :field="ctrl.model" v-model="ctrl.model"></field-edt>
+                  </base-table>
+                  <base-table title="Serial:">
+                    <field-edt tbl="controllers" f-name="serial" :t-id="ctrl.id" :field="ctrl.serial" v-model="ctrl.serial"></field-edt>
+                  </base-table>
+                  <base-table title="IP:">
+                    <field-edt tbl="controllers" f-name="ip" :t-id="ctrl.id" :field="ctrl.ip" v-model="ctrl.ip"></field-edt>
+                  </base-table>
+                  <base-table title="Porta:">
+                    <field-edt tbl="controllers" f-name="port" :t-id="ctrl.id" :field="ctrl.port" v-model="ctrl.port"></field-edt>
+                  </base-table>
+                  <base-table title="Usuário:">
+                    <field-edt tbl="controllers" f-name="user" :t-id="ctrl.id" :field="ctrl.user" v-model="ctrl.user"></field-edt>
+                  </base-table>
+                  <base-table title="Senha:">
+                    <field-edt
+                      tbl="controllers"
+                      f-name="password"
+                      :t-id="ctrl.id"
+                      :field="ctrl.password"
+                      v-model="ctrl.password"
+                    ></field-edt>
+                  </base-table>
+                </div>
+                <br />
+                <button class="button is-success">Nova Controladora</button>
+              </div>
+            </div>
+          </div>
+          <!-- Div Condos -->
+        </div>
+        <!-- Div container -->
+        <br />
+      </section>
+    </div>
+    <!--Fim APP-->
+
     <footer class="footer">
       <div class="content has-text-centered">
-        <p>
-          Entre em contato para criar um usuário.
-        </p>
+        <p>AC Control</p>
       </div>
     </footer>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment-with-locales.min.js"></script>
-    <script src="/node_modules/vue/dist/vue.js"></script> 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> 
-    <script src="./js/vueAdmin.js"></script>
+
+    <script src="/node_modules/vue/dist/vue.js"></script>
+    <script src="./dist/config.js"></script>
   </body>
 </html>

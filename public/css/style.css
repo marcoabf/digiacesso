@@ -4,7 +4,17 @@
 body {
   padding: 0px;
   margin: 0px;
-  border: 0px ;
+  border: 0px;
+}
+.section {
+  padding: 0 5px;
+  margin: 0 5px;
+}
+.condo-selected {
+  /* admin */
+  border-radius: 5px;
+  padding: 10px 5px 5px 10px;
+  box-shadow: 1px 1px 5px gray;
 }
 #faixa_topo {
   background-image: linear-gradient(#008040, #00cc66);
@@ -12,44 +22,52 @@ body {
 #cabecalho {
   margin: 10px;
   margin-top: 20px;
-  
 }
 
 #link {
   text-align: left;
 }
-#startPage { /* Div com os Botões iniciais */
+.navigation {
+  /* Div com os Botões iniciais */
   text-align: center;
   margin-bottom: 20px;
 }
 .button {
-    margin: 5px;
-    width: 140px;
+  margin: 5px;
+  width: 140px;
 }
+
+.link-cinza:visited,
+.link-cinza:link {
+  color: lightgray;
+}
+
 #login {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    transition-duration: 300ms;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  transition-duration: 300ms;
 }
 .login {
-    text-align: right;
-    float: right;
+  text-align: right;
+  float: right;
 }
 #user {
-  border-radius: 10px;
-  padding: 20px;
+  padding: 0px;
 }
 .blocks {
   display: grid;
-  width: 360px; 
+  width: 360px;
   grid-template-columns: 50% 50%;
 }
-.janela { /*janela do qrcode */
+.janela {
+  /*janela do qrcode */
   display: inline-block;
   align-items: center;
   text-align: center;
   position: fixed;
   top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
   width: 90%;
   height: 90%;
   z-index: 1;
@@ -59,12 +77,13 @@ body {
   background-color: #fff;
 }
 .line {
-  display: grid ;
+  display: grid;
 }
 
 /* Configuração das transições ---------------------------- */
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
   transition-delay: 1s;
 }
 .ade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
@@ -78,39 +97,49 @@ body {
   color: #ffffff;
 }
 
-.div-table-array-line{
+.div-table-array-line {
   display: grid;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  width: 100%;
+  grid-template-columns: minmax(110px, 20%) auto;
+  padding-top: 5px;
+  padding-bottom: 5px;
   border: white;
-  border-bottom: green;
+  border-bottom: rgba(0, 138, 0, 0.493);
   border-style: solid;
   border-width: 1px;
   background-color: #ffffff;
-  margin-bottom: 10px;
 }
 .div-table-array-line:hover {
   background-color: rgba(144, 238, 144, 0.26);
 }
 
-
 /* Layout da tabela div ---------------------------- */
 :root {
-  --width-small: 100%;
-  --border-div-table: #004d11;
-  --background-div-table-head: #ebfff7;
+  --width-small: auto;
+  --border-div-table: rgb(231, 231, 231);
+  --background-div-table-head: rgba(0, 209, 178, 0.116);
+}
+.table-grid-container {
+  display: flex;
+  align-content: center;
+  align-items: center;
+}
+.table-around {
+  border-radius: 3px;
+  width: calc(100% - 5px);
+  box-shadow: 1px 1px 6px gray;
+  margin: 15px 0px;
 }
 .first-line {
   font-size: 1.5 rem;
+  height: 44px;
   display: grid;
   width: var(--width-small);
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  border-style: solid;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-style: solid;
   border-width: 1px;
   border-color: var(--border-div-table);
-  background-color:var(--background-div-table-head);
+  background-color: var(--background-div-table-head);
   padding-top: 10px;
   padding-bottom: 10px;
 }
@@ -118,28 +147,34 @@ body {
   display: grid;
   width: var(--width-small);
   height: 35px;
-  border-style: solid;
+  border-style: hidden;
   border-color: var(--border-div-table);
   border-width: 1px;
   text-align: center;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  background-color:var(--background-div-table-head);
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  background-color: var(--background-div-table-head);
 }
-.div-table-line{
+.div-table-line {
   display: grid;
   padding-top: 2px;
   padding-bottom: 0px;
   width: var(--width-small);
-  border-style: solid;
+  border-bottom-style: solid;
   border-width: 1px;
   border-color: var(--border-div-table);
   background-color: #ffffffe1;
 }
 
-#visita { grid-template-columns: 65% 0% 35%;}
-#registro{ grid-template-columns: 30% 40% 30%;  }
-.transp{ color: rgba(255, 255, 255, 0);}
+#visita {
+  grid-template-columns: 65% 0% 35%;
+}
+#registro {
+  grid-template-columns: 30% 40% 30%;
+}
+.transp {
+  color: rgba(27, 27, 27, 0);
+}
 
 .table-c {
   display: inline-block;
@@ -148,13 +183,36 @@ body {
 }
 
 @media screen and (min-width: 600px) {
-  .first-line { width: 600px; grid-template-columns: 250px 150px 200px;}
-  .last-line {width: 600px;}
-  .div-table-line { width: 600px; grid-template-columns: 250px 150px 200px; }
-  #visita {  width: 600px; grid-template-columns: 60% 20% 20%;}
-  #registro{  width: 600px; grid-template-columns: 20% 60% 20%; }
-  .transp{ color: rgb(0, 0, 0);}
-  #startPage { text-align: left; }
+  /* para desktop */
+  .first-line,
+  .last-line,
+  .div-table-line,
+  #visita,
+  #registro {
+    width: auto;
+  }
+  .first-line {
+    grid-template-columns: 250px 150px 200px;
+  }
+  .div-table-line {
+    grid-template-columns: 250px 150px 200px;
+  }
+  #visita {
+    grid-template-columns: 50% 20% 30%;
+  }
+  #registro {
+    grid-template-columns: 20% 30% 15% 20% 15%;
+  }
+  .transp {
+    color: rgb(49, 49, 49);
+  }
+  .navigation {
+    text-align: left;
+  }
+  .bloco {
+    margin: auto;
+    max-width: 660px;
+  }
 }
 
 /* Configuração do Loading ---------------------------- */
@@ -164,14 +222,19 @@ body {
   align-items: center;
   position: absolute;
   top: 100px;
+  left: 0px;
   width: 100%;
   height: 100%;
   z-index: 1;
   animation: showing 0.4s;
 }
 @keyframes showing {
-  0% { transform: scale(0.1); }
-  100% {transform: scale(1);}
+  0% {
+    transform: scale(0.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 .spin {
   position: absolute;
@@ -199,4 +262,63 @@ body {
   position: absolute;
   color: #267e75;
   font-family: sans-serif;
+}
+
+/* Botão deslizante */
+.switch {
+  position: absolute;
+  visibility: hidden;
+}
+.switch + label {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  height: 20px;
+}
+.switch--shadow + label {
+  padding: 5px;
+  width: 40px; /* largura do botao*/
+  height: 20px; /* altura do botao*/
+  background-color: #dddddd;
+  border-radius: 50px;
+}
+/* Posição da Bolinha do botão */
+.switch--shadow + label:before,
+.switch--shadow + label:after {
+  display: block;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  bottom: 1px;
+  content: "";
+}
+/* Através do before desenha-se o fundo do label */
+.switch--shadow + label:before {
+  right: 1px;
+  background-color: #ffe3ae;
+  border-radius: 20px;
+  transition: all 0.4s;
+  padding-left: 20px;
+  padding-top: 5px;
+  content: "";
+}
+/* Através do after desenha-se a bolinha do botão */
+.switch--shadow + label:after {
+  width: 18px;
+  background-color: #fff;
+  border-radius: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s;
+}
+/* Liga - Desliga é feito através do checked*/
+.switch--shadow:checked + label:before {
+  background-color: #8ce196;
+  padding-top: 1px;
+  padding-left: 1px;
+  content: "";
+}
+.switch--shadow:checked + label:after {
+  transform: translateX(19px);
 }
