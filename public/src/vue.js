@@ -204,7 +204,7 @@ var app = new Vue({
         this.ctrl = response.data;
         this.access = [];
         this.doorSelected = response.data[0].ctrlID; // posiciona na primeira porta da aba abrir
-        //this.controllers = response.data;
+        this.accessList = "visitors"; //retornando radio button para visitantes (pagina Registros)
         this.see.loginPage = false;
         this.login.password = "";
         this.showbtn = true;
@@ -327,7 +327,6 @@ var app = new Vue({
       // lista de registros
       markBtn(2);
       this.seeOne("regPage");
-      this.accessList = "visitors";
       this.loading = true;
       console.log(this.api.id);
       console.log(origin);

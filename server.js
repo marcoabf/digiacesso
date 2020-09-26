@@ -6,9 +6,9 @@ const webpush = require("web-push");
 var nodemailer = require("nodemailer");
 const pool = mysql.createPool({
   connectionLimit: 10,
-  host: "mysql669.umbler.com",
-  user: "masterdbuser",
-  password: "inspiron,25",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
   database: "digiacesso",
   port: port,
 });

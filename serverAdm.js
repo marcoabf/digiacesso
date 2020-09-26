@@ -1,30 +1,18 @@
 var moment = require("moment");
-var randomstring = require("randomstring");
 const mysql = require("mysql2");
 var port = process.env.DB_PORT || 3306;
-const webpush = require("web-push");
-var nodemailer = require("nodemailer");
+
 const pool = mysql.createPool({
   connectionLimit: 10,
-  host: "mysql669.umbler.com",
-  user: "masterdbuser",
-  password: "inspiron,25",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
   database: "digiacesso",
   port: port,
 });
 const promisePool = pool.promise();
 const axios = require("axios");
 const { NULL } = require("mysql2/lib/constants/types");
-
-let transporter = nodemailer.createTransport({
-  host: "smtp.uhserver.com",
-  port: 587,
-  secure: false, // upgrade later with STARTTLS
-  auth: {
-    user: "contato@accontrol.com.br",
-    pass: "ctrl0400",
-  },
-});
 
 module.exports = {
   loginAdmin(req, res) {

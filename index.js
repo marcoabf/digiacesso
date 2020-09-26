@@ -10,8 +10,10 @@ var server = require("./server");
 var serverAdm = require("./serverAdm");
 var port = process.env.PORT || 3000;
 const app = express();
+
 console.log("começando...");
 console.log(process.env.DB_USER);
+
 //força redirecionamento HTTPS
 app.get("*", (req, res, next) => {
   if (req.headers["x-forwarded-proto"] != "https" && req.headers.host == "digiacesso.net") {
