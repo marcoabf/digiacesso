@@ -26,7 +26,10 @@
       </section>
       <section class="section">
         <!--Starting Section-->
+
         <div class="container">
+          <button @click="getTelegramUpdates">Update</button>
+
           <div id="startPage" v-if="showbtn">
             <button class="button is-medium" @click="seeOne('userPage')"><i class="fas fa-user"></i>&nbsp Usuário</button>
             <button class="button is-medium" style="width: 180px" @click="seeOne('condosPage')">

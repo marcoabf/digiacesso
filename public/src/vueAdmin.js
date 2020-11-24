@@ -2,9 +2,9 @@ const _ = require("underscore");
 const axios = require("axios").default;
 axios.defaults.withCredentials = true;
 
-//axios.defaults.baseURL = "http://localhost:3000";
+axios.defaults.baseURL = "http://localhost:3000";
 //axios.defaults.baseURL = "http://192.168.0.253:3000";
-axios.defaults.baseURL = "https://digiacesso.net/";
+//axios.defaults.baseURL = "https://digiacesso.net/";
 
 import baseTable from "../components/baseTable.js";
 import baseInput from "../components/baseInput.js";
@@ -69,6 +69,7 @@ var app = new Vue({
     theCondoId: 0,
     ctrl2read: 0,
     ctrlCode: "",
+    tokenTelegram: '1140456861:AAHHhjj7mi0ZlWDTQLEIwPa7rgoRUOo22gU',
   },
   mounted: async function () {
     console.log("Iniciando");
@@ -109,6 +110,12 @@ var app = new Vue({
     },
   },
   methods: {
+    getTelegramUpdates: async function () {
+      console.log('Getting...');
+      const response = await axios.get("https://api.telegram.org/bot1140456861:AAHHhjj7mi0ZlWDTQLEIwPa7rgoRUOo22gU/getUpdates");
+      console.log(response.data);
+      console.log('end get');
+    },
     userTypeChanged: function () {
       console.log(this.newUser);
     },

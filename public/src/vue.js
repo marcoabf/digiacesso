@@ -8,10 +8,10 @@ const moment = require("moment");
 const axios = require("axios").default;
 
 axios.defaults.withCredentials = true;
-//axios.defaults.baseURL = "http://localhost:3000";
+axios.defaults.baseURL = "http://localhost:3000";
 //axios.defaults.baseURL = "http://192.168.43.228:3000";
 //axios.defaults.baseURL = "http://192.168.0.253:3000";
-axios.defaults.baseURL = "https://digiacesso.net/";
+//axios.defaults.baseURL = "https://digiacesso.net/";
 //axios.defaults.baseURL = 'http://testipv6maf.ddns.net:3000/';
 
 Vue.component("baseTable", baseTable);

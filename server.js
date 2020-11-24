@@ -16,12 +16,12 @@ const promisePool = pool.promise();
 const axios = require("axios");
 
 let transporter = nodemailer.createTransport({
-  host: "smtp.uhserver.com",
-  port: 587,
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
   secure: false, // upgrade later with STARTTLS
   auth: {
     user: "contato@accontrol.com.br",
-    pass: "ctrl0400",
+    pass: process.env.MAIL_PASS,
   },
 });
 
