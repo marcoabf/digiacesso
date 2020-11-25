@@ -26,7 +26,7 @@ app.get("*", (req, res, next) => {
 
 // POLÍTICAS CORS
 var corsOptions = {
-  origin: true,
+  origin: ["http://www.digiacesso.net", "http://api.telegram.org", "http://localhost:3000/"],
   credentials: true,
 };
 app.use(cors(corsOptions));
