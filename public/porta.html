@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>digiACESSO</title>
+    <link rel="stylesheet" href="./node_modules/bulma/css/bulma.min.css"> 
+    <link rel="stylesheet" href="./node_modules/bulma-slider/dist/css/bulma-slider.min.css"> 
+    <link rel="stylesheet" href="./css/style.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  </head>
+  <!-- Iniciando -->
+    <body>
+        <div id="app">
+            <section class="hero is-primary" id="faixa_topo" >
+                <div class="header" id="cabecalho">
+                <div class="container">
+                    <h1 class="title is-family-code"> _digiACESSO </h1>
+                    <h2 class="subtitle is-family-code"> Acesso simples e seguro! </h2>
+                </div>
+                </div>
+            </section>
+            <section>
+              <div class="container">
+                <br>
+                <h1 class="title"> Portão dos fundos </h1>
+                <img src="https://linuxreviews.org/images/2/2f/Linuxreviews-qr-code.png" alt="Qr Code">
+                <br>
+                <button class="button is-danger" @click="openDoor()">Abrir</button>
+                <br>
+                {{gps}}
+                <br>
+                {{dispositivos}}
+              </div>
+            </section>
+        </div>
+
+        <script src="/node_modules/vue/dist/vue.js"></script> 
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> 
+        <script src="./js/vuePorta.js"></script>
+    </body>
+</html>

@@ -1,5 +1,6 @@
 var moment = require("moment");
 var randomstring = require("randomstring");
+const save = require('save-file');
 const mysql = require("mysql2");
 var port = process.env.DB_PORT || 3306;
 const webpush = require("web-push");
@@ -14,6 +15,8 @@ const pool = mysql.createPool({
 });
 const promisePool = pool.promise();
 const axios = require("axios");
+const { LATIN2_CROATIAN_CI } = require("mysql2/lib/constants/charsets");
+const telegramToken = '1140456861:AAHHhjj7mi0ZlWDTQLEIwPa7rgoRUOo22gU';
 
 let transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
@@ -59,7 +62,7 @@ module.exports = {
     let username = req.body.username;
     let password = req.body.password;
     console.log(req.session);
-    var query = "SELECT users.id, username, email, firstname, lastname, users.type, users.unit, ";
+    var query = "SELECT users.id, username, email, firstname, lastname, users.type, users.unit, users.notify, ";
     query += " users.condoid , condos.name as condoName, controllers.id as ctrlID, controllers.name as ctrlName ";
     query += " from users, condos, controllers WHERE ";
     if (req.session.loggedin == true && req.session.userid) {
@@ -161,7 +164,7 @@ module.exports = {
     if (userId != null) {
       let dtc = moment().format("YYYY-MM-DD HH:mm:ss"); //horário atual .subtract(3, 'h')
       let key = randomstring.generate(8);
-      key = key + userId;
+      key = key + userId + dtc;
       let link = "https://www.digiacesso.net/forgotpass/?link=" + key;
       let mailContent = "<h1> _digiACESSO </h1> <p> Como solicitado, segue o link para mudança de senha. <BR> ";
       mailContent += '<a href="' + link + '"> ' + link + "</a>";
@@ -200,7 +203,7 @@ module.exports = {
     if (req.body.data != null) {
       link = req.body.data;
     } // pega parametro link da requisição post
-    let query = "SELECT * FROM pending WHERE data=?";
+    let query = "SELECT * FROM pending WHERE data=? ORDER BY id DESC";
     if (link == null) link = "0";
     const rowUser = await promisePool
       .query(query, [link])
@@ -252,6 +255,18 @@ module.exports = {
         console.log(err);
         res.send("Não foi possível alterar a senha!");
       });
+  },
+  async lac(req,res) {
+    // recebe o qrcode, verifica acesso e envia comando de abertura
+    console.log("leitor AC Control");
+    console.log(req.headers);
+    console.log("query:");
+    console.log(req.body);
+    const cmd = await axios.get("http://192.168.0.72/set-output");
+    res.status(200).end(); //responde como OK: 200
+    //console.log("solicitando imagem");
+    //const img = await axios.get("http://192.168.0.72/capture");
+
   },
   async utech(req, res) {
     //------utech ---- recebimento de eventos das controladoras (apenas utech)
@@ -406,7 +421,9 @@ module.exports = {
         let body = firstname + ": Acesso: " + stateBr(req.query.state);
         let msg = { title: "digiACESSO", body: body };
         webpush.sendNotification(obj, JSON.stringify(msg), { TTL: 60 }); //sending
-        if (notifyR == 2 || notifyR == 3) {
+        let notifyBin = parseInt(notifyR).toString(2);
+        // bits: 0- push, 1- email 2- telegram
+        if (notifyBin.charAt(1) == '1') {
           //enviar email
           var mailOptions = {
             from: '"digiACESSO" <contato@accontrol.com.br>',
@@ -717,9 +734,33 @@ module.exports = {
       res.send("Usuário não encontrado!");
     });
   },
+  async telegramTest(req,res) {
+    let chatId = '';
+    if (req.session.userid == "")
+    { res.end; }
+    let query = "SELECT * FROM users WHERE id=?";
+    const rowInsert = await promisePool
+      .query(query, [req.session.userid])
+      .then(([rows, fields]) => {
+        chatId = rows[0].telegram;
+      })
+      .catch((err) => {
+        console.log(err);
+        res.send("Dados não foram atualizados!");
+      });
+    sendTelegramMsg(chatId, req.body.msg);
+    res.end;
+  }
+
 }; // fim do export
 //-------------------------------------------------------------
 
+function sendTelegramMsg(userChatId, msg) {
+  let telegramUrl = "https://api.telegram.org/bot" + telegramToken + "/sendMessage";
+  console.log(telegramUrl);
+  const response = axios.post(telegramUrl, {chat_id: userChatId, text: msg}, {withCredentials: false});
+  console.log(response.data);
+}
 async function insertAccess(dt, ctrlId, userId, state, request) {
   console.log("funcão insertACCESS");
   console.log(`dados recebidos: data: ${dt}, controladora: ${ctrlId}, usuário: ${userId}, ${state}, ${request} `);

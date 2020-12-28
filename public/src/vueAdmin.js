@@ -109,9 +109,22 @@ var app = new Vue({
     },
   },
   methods: {
+    setTelegraWebHook: async function () {
+      console.log('Definindo webhook ...');
+      const url = '';
+      const response = await axios.post("https://api.telegram.org/bot1140456861:AAHHhjj7mi0ZlWDTQLEIwPa7rgoRUOo22gU/setWebhook", {url: url} , {withCredentials: false});
+      console.log(response.data);
+      console.log('end def');
+    },
     getTelegramUpdates: async function () {
       console.log('Getting...');
       const response = await axios.get("https://api.telegram.org/bot1140456861:AAHHhjj7mi0ZlWDTQLEIwPa7rgoRUOo22gU/getUpdates", {withCredentials: false});
+      console.log(response.data);
+      console.log('end get');
+    },
+    sendTelegramMsg: async function () {
+      console.log('Getting...');
+      const response = await axios.post("https://api.telegram.org/bot1140456861:AAHHhjj7mi0ZlWDTQLEIwPa7rgoRUOo22gU/sendMessage", {chat_id: '160315311', text:'Entrada Liberada!'}, {withCredentials: false});
       console.log(response.data);
       console.log('end get');
     },
@@ -140,29 +153,32 @@ var app = new Vue({
     },
     condoLoad: async function () {
       //busca dados do condominio e carrega página
-      console.log(this.condoSelected);
+      console.log("Id do Condomínio: " + this.condoSelected); 
       this.see.condoData = true;
-      this.theCondoId = Number(document.getElementById("condo-index").selectedIndex);
-      console.log(this.theCondoId);
+      this.theCondoId = Number(document.getElementById("condo-index").selectedIndex); //selectedIndex guarda o item selecionado no componente select
+      console.log("index do componente: " + this.theCondoId);
       //busca todas as unidades dos condomínios
       if ((this.condoSelected != "0") & (this.condoSelected != NULL)) {
-        console.log("buscando...");
+        console.log("buscando..");
         const response = await axios.post("/condounits", {
           condoId: this.condoSelected,
         });
+        console.log(response.data);
         this.unitUsers = _.each(response.data, (element) => {
-          return (element.password = "");
+          return (element.password = '');
         });
         this.unitUsers = _.groupBy(this.unitUsers, (obj) => {
           return obj.unit;
         });
         this.units = _.initial(Object.getOwnPropertyNames(this.unitUsers));
         console.log(this.unitUsers);
-        // console.log(this.units);
+        console.log(this.units);
         const response2 = await axios.post("/condoctrls", {
           condoId: this.condoSelected,
         });
         this.equipments = response2.data;
+        console.log("equipamentos:");
+        console.log(this.equipments);
       }
     },
     loginAdminCheck: async function () {

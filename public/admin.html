@@ -29,6 +29,8 @@
 
         <div class="container">
           <button @click="getTelegramUpdates">Update</button>
+          <button @click="sendTelegramMsg">Send</button>
+          <button @click="setTelegraWebHook">webhook</button>
 
           <div id="startPage" v-if="showbtn">
             <button class="button is-medium" @click="seeOne('userPage')"><i class="fas fa-user"></i>&nbsp Usuário</button>

@@ -48,7 +48,7 @@ app.use(
     secret: "ctrlgrn",
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 1000 * 60 * 60 * 4 }, //the last number is the maxAge in hours
+    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }, //the last number is the maxAge in hours
   })
 );
 
@@ -57,6 +57,9 @@ app.use("/", (req, res, next) => {
   next();
 }); // msg da raiz
 app.post("/", server.loginUser); // resposta de solicitações de login
+app.get("/porta", (req, res) => {
+  res.redirect("../porta.html");
+});
 app.get("/admin", (req, res) => {
   res.redirect("./admin.html");
 });
@@ -76,8 +79,9 @@ app.post("/addguest", server.addGuest); //cadastra um visitante na leitora
 app.post("/delguest", server.delGuest);
 app.post("/open", server.openDoor);
 app.post("/alarmoff", server.alarmOff);
-app.get("/utech", server.utech); //recebe notificações da leitora
-app.post("/webpush", server.webPush); //recebe solicitação de notificação do navegador do cliente
+app.get("/utech", server.utech); // notificações da leitora marca utech
+app.post("/lac", server.lac); // notificações da leitora da Ac Control LAC
+app.post("/webpush", server.webPush); // solicitação de notificação webpush do navegador do cliente
 app.get("/sendtestnotification", server.sendTestNotification);
 app.get("/authadmin", serverAdm.loginAdmin);
 app.post("/authadmin", serverAdm.loginAdmin);
@@ -85,6 +89,7 @@ app.post("/condounits", serverAdm.condoUnits);
 app.post("/condoctrls", serverAdm.condoEquipments); //controllers
 app.post("/updatefield", server.updateField);
 app.post("/fieldexist", server.fieldExist);
+app.post("/sendTTest", server.telegramTest);
 
 /// catch 404 and forwarding to error handler
 app.use(function (req, res, next) {

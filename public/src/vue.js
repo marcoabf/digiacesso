@@ -75,7 +75,9 @@ var pages = {
   regPage: false,
   passwordPage: false, // dentro da pagina de usuário
   about: false,
+  loadingPage: false,
   changePassword: false, // na página de login
+  menuModal: false,
 };
 
 var guests = {
@@ -110,18 +112,25 @@ var app = new Vue({
     guest: guests,
     regLimit: 0, // para aumentar o limite de registros quando
     login: login,
+    nPushBtn: false,
+    nTelegramBtn: false,
   },
   mounted: async function () {
     console.log("Iniciando");
     //this.see.loginPage=true;
     this.loading = true;
     const response = await axios.post("/auth");
-    console.log(response.data);
+    //console.log(response.data);
     if (typeof response.data === "string") {
       // se não retornou os dados do usuáiro
       this.see.loginPage = true;
     } else {
       this.api = response.data[0];
+      let ntf = parseInt(this.api.notify).toString(2).split("").reverse().join( "" );
+      this.api.npush = (ntf.charAt(0)=='1')?true:false;
+      this.api.nemail = (ntf.charAt(1)=='1')?true:false;
+      this.api.ntelegram = (ntf.charAt(2)=='1')?true:false;
+      console.log(this.api);
       this.ctrl = response.data;
       this.doorSelected = response.data[0].ctrlID; // posiciona na primeira porta da aba abrir
       this.see.loginPage = false;
@@ -159,6 +168,17 @@ var app = new Vue({
     },
   },
   methods: {
+    updateNotifyers: async function() {
+      let npush = (this.api.npush==true)?'1':'0'; //bit 1
+      let nemail = (this.api.nemail==true)?'1':'0'; //bit 2
+      let ntelegram = (this.api.ntelegram==true)?'1':'0'; //bit 3
+      let ntf =  ntelegram + nemail + npush; // juntando os bits
+      let data = parseInt(ntf,2); //transformando em decimal
+      console.log(data);
+      let id = this.api.id;
+      const response = await axios.post("/updatefield", { tbl: 'users', fid: id, fname: 'notify', fvalue: data });
+      //alert(response.data);
+    },
     tela: function () {
       return window.matchMedia("(min-width: 599px)").matches; // <600 (true) mobile // >600 (false) desktop
     },
@@ -172,6 +192,7 @@ var app = new Vue({
         this.see[values] = false;
       }
       this.see[page] = true;
+      //console.log(document.getElementById('menuPos').offsetLeft)
     },
     subscribe: function () {
       //web push notification
@@ -188,20 +209,23 @@ var app = new Vue({
       gerarQR(qr);
     },
     loginCheck: async function () {
-      // do login
+      // fazendo o login com usuário e senha
       console.log(this.login);
       const response = await axios.post("/auth", {
         username: this.login.username,
         password: this.login.password,
       });
-      console.log(response.data);
       if (typeof response.data === "string") {
         alert(response.data);
       } else {
         //login ok
-        this.api = response.data[0];
+        this.api = response.data[0]; // dados do usuário
+        let ntf = parseInt(this.api.notify).toString(2).split("").reverse().join( "" );
+        this.api.npush = (ntf.charAt(0)=='1')?true:false;
+        this.api.nemail = (ntf.charAt(1)=='1')?true:false;
+        this.api.ntelegram = (ntf.charAt(2)=='1')?true:false;
         console.log(this.api);
-        this.ctrl = response.data;
+        this.ctrl = response.data; // lista de controladoras do usuário
         this.access = [];
         this.doorSelected = response.data[0].ctrlID; // posiciona na primeira porta da aba abrir
         this.accessList = "visitors"; //retornando radio button para visitantes (pagina Registros)
@@ -389,6 +413,11 @@ var app = new Vue({
       }
       return text;
     },
+    sendTTest: async function() {
+      var response = await axios.post("/sendTTest", {
+        msg: "Mensagem de teste do digiAcesso!",
+      });
+    }
   },
 });
 

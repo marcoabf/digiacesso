@@ -18,20 +18,32 @@
           <div class="bloco">
             <h1 class="title is-family-code"> _digiACESSO </h1>
             <h2 class="subtitle is-family-code"> Acesso simples e seguro! </h2>
-            <div class="login"><i class="fas fa-user"></i>
-              &nbsp {{api.firstname}} <span v-if="showbtn"><a v-on:click='doLogout()'> - Sair</a></span>
+            <div style="display:flex; flex-direction: row; justify-content: space-between; ">
+              <div class='login'>
+                <span > Menu </span>
+                  <div class='menu' >
+                    <Ul>
+                      <li><a v-on:click='userPage()'>Usuário </a></li></li>
+                      <li>Mensagens</li>
+                      <li><a v-on:click='doLogout()'>Sair </a></li>
+                    </Ul>
+                  </div>
+              </div>
+              <div class="login"><i class="fas fa-user"></i>
+                  &nbsp {{api.firstname}} 
+              </div>
             </div>
+            
           </div>
         </div>
       </section>
       <section class="section"> <!--Starting Section-->
-          <div class="bloco">
+          <div class="bloco">    
             <div class="navigation" v-show="showbtn">
               <button class="button  is-medium" @click="userPage()" ><i class="fas fa-user"></i>&nbsp Usuário</button>
               <button class="button is-medium" @click="mountGuests()" ><i class="fas fa-user-friends"></i>&nbsp Visitas</button>
               <button class="button is-medium" @click="regStart()" ><i class="fas fa-exchange-alt"></i>&nbsp Registros</button>
               <button class="button is-medium" @click="openPage()" ><i class="fas fa-unlock"></i>&nbsp Abrir</button>
-
               <br>
             </div>  <!-- fim da start page-->
             <div class="load" v-if="loading">
@@ -75,12 +87,36 @@
                 <base-table title="Tipo:">{{userType(api.type)}}</base-table>
                 <base-table title="Nome:"><field-edt tbl="users" f-name="firstname" :t-id="api.id" :field="api.firstname" v-model="api.firstname"></field-edt> </base-table>
                 <base-table title="Sobrenome:"><field-edt tbl="users" f-name="lastname" :t-id="api.id" :field="api.lastname" v-model="api.lastname"></field-edt> </base-table>
-                <base-table title="Email:">{{api.email}}</base-table>
+                <base-table title="Email:">{{api.email}}</base-table> 
                 <base-table title="Condomínio:">{{api.condoName}}</base-table>
-                <base-table title="Receber notificação por:">E-mail 
-                  <input id="switch-shadow" class="switch switch--shadow" type="checkbox">
-                  <label for="switch-shadow"></label>
-                </base-table>
+                <base-table title="Unidade:">{{api.unit}} </base-table>
+                <P>&nbsp;</P>
+                <strong> Receber notificação por: </strong>
+                <div style="display:flex; flex-direction: row;"> 
+                  <div class="notif-line-cel" title="Notificação por navegador (firefox, chrome etc)"> Web (Android/Windows)</div>
+                  <div> <input v-model="api.npush" @change="updateNotifyers" id="ipush" class="switch switch--shadow" type="checkbox">
+                  <label for="ipush"></label></div>
+                  <div style="padding-left: 20px;"> <a @click="nPushBtn=!nPushBtn"> {{nPushBtn?'Voltar':'Configurar'}} </a></div>
+                </div>
+                <div v-show="nPushBtn" style="padding-bottom: 20px;">
+                  <button class="button is-small is-danger" @click="subscribe()" >Cadastrar notif.</button>
+                  <button class="button is-small is-danger" @click="testSubs()" >Enviar teste</button>
+                </div>
+                <div style="display:flex; flex-direction: row;"> 
+                  <div class="notif-line-cel"> E-mail</div>
+                  <div> <input v-model="api.nemail" @change="updateNotifyers" id="imail" class="switch switch--shadow" type="checkbox">
+                  <label for="imail"></label></div>
+                </div>
+                <div style="display:flex; flex-direction: row;"> 
+                  <div class="notif-line-cel"> Telegram</div>
+                  <div> <input v-model="api.ntelegram" @change="updateNotifyers" id="itelegram" class="switch switch--shadow" type="checkbox">
+                  <label for="itelegram"></label></div>
+                  <div style="padding-left: 20px;"> <a @click="nTelegramBtn=!nTelegramBtn"> {{nTelegramBtn?'Voltar':'Configurar'}} </a></div>
+                </div>
+                <div v-show="nTelegramBtn" style="padding-bottom: 20px;">
+                  <button class="button is-small is-danger" @click="TelegramCode()" >Gerar Código</button>
+                  <button class="button is-small is-danger" @click="sendTTest()" >Enviar teste</button>
+                </div>
                 <p> &nbsp </p>
                 <button class="button is-danger is-light" @click="see.passwordPage=true">Trocar Senha</button>
                 <div id="pwd" v-if="see.passwordPage">
@@ -91,8 +127,6 @@
                   <button class="button is-success" v-on:click="changePassword()"> Salvar Senha </button>
                   <br><br>
                 </div>
-                <button class="button is-danger" @click="subscribe()">Cadastrar notif.</button>
-                <button class="button is-danger" @click="testSubs()">Enviar teste</button>
               </div>
             </div> <!-- Div user -->
             <div id="guest" v-if="see.guestPage"> <!-- --- Guest Page -->
@@ -193,7 +227,12 @@
           </div> <!-- Div container -->
 
       </section>
-    
+      <div class="janela" v-show="see.loadingPage">  <!-- Página para bloquear outras janelas enquanto estiver carregando  -->
+        <p> &nbsp; <p> &nbsp; <p> &nbsp; <p> &nbsp; <p> &nbsp;
+        <h1 class="title is-family-code"> _digiACESSO </h1>
+        <p> &nbsp; <p> &nbsp;
+        <strong class="has-text-danger is-family-code"> Carregando...</strong>
+      </div>
     <footer class="footer">
       <div class="content has-text-centered">
         <div class = "has-text-centered"> 

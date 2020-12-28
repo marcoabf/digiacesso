@@ -63,12 +63,13 @@ module.exports = {
   // envia array de usuários do condomínio ordenado por unidade (casa) from vueAdmin.js
   async condoUnits(req, res) {
     if (req.session.adminId != undefined) {
+      console.log("sessao ok");
       let condoId = req.body.condoId;
       let query = "SELECT * FROM users WHERE condoid=? AND responsible IS NULL ORDER BY unit";
       const result = await promisePool
         .query(query, [condoId])
         .then(([rows, fields]) => {
-          res.send(rows[0]);
+          res.send(rows);
         })
         .catch((err) => {
           console.log(err);
@@ -83,7 +84,7 @@ module.exports = {
       const result = await promisePool
         .query(query, [condoId])
         .then(([rows, fields]) => {
-          res.send(rows[0]);
+          res.send(rows);
         })
         .catch((err) => {
           console.log(err);
