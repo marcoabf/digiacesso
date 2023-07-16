@@ -6,14 +6,17 @@ body {
   margin: 0px;
   border: 0px;
 }
+
 .section {
   padding: 0 5px;
   margin: 0 5px;
 }
+
 .login .menu {
   display: flex;
   visibility: hidden;
   position: absolute;
+  min-width: 150px;
   z-index: 3;
   padding: 5px 0;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
@@ -33,17 +36,25 @@ body {
   opacity: 1;
   transform: translateY(-1px);
 }
+
 .menu ul li {
   text-align: left;
   padding: 0 10px;
 }
+
 .menu ul li:hover {
   background-color: rgb(214, 255, 214);
   height: auto;
 }
+
 .menu ul li a {
   text-decoration: none;
   color: black;
+}
+
+footer,
+footer a {
+  color: white;
 }
 
 /* Enter and leave animations can use different */
@@ -51,11 +62,16 @@ body {
 .slide-fade-enter-active {
   transition: all 0.3s ease;
 }
+
 .slide-fade-leave-active {
   transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
 }
-.slide-fade-enter, .slide-fade-leave-to
-/* .slide-fade-leave-active below version 2.1.8 */ {
+
+.slide-fade-enter,
+.slide-fade-leave-to
+
+/* .slide-fade-leave-active below version 2.1.8 */
+  {
   transform: translateY(-10px);
   opacity: 0;
 }
@@ -66,9 +82,11 @@ body {
   padding: 10px 5px 5px 10px;
   box-shadow: 1px 1px 5px gray;
 }
+
 #faixa_topo {
   background-image: linear-gradient(#008040, #00cc66);
 }
+
 #cabecalho {
   margin: 10px;
   margin-top: 20px;
@@ -77,11 +95,13 @@ body {
 #link {
   text-align: left;
 }
+
 .navigation {
   /* Div com os Botões iniciais */
   text-align: center;
   margin-bottom: 20px;
 }
+
 .button {
   margin: 10px 5px 10px 5px;
   width: 140px;
@@ -92,40 +112,106 @@ body {
   color: lightgray;
 }
 
+
 #login {
   margin-top: 10px;
   margin-bottom: 10px;
   transition-duration: 300ms;
 }
+
 .login {
   text-align: right;
   float: right;
 }
+
 #user {
   padding: 0px;
 }
-.blocks {
-  display: grid;
-  width: 360px;
-  grid-template-columns: 50% 50%;
+
+#user-photo {
+  align-self: right;
+  margin: 5px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  box-shadow: 1px 1px 6px gray;
+  background-size: cover;
+  background-color: #dcfae0;
 }
-.janela {
-  /*janela do qrcode */
+
+#add-photo {
+  position: relative;
+  top: -50px;
+  left: 160px;
+  width: 50px;
+  height: 50px;
+  padding: 13px 18px;
+  box-shadow: 1px 1px 6px gray;
+  border-radius: 50%;
+  background-color: rgb(60, 255, 206);
+}
+
+#camera-photo {
   display: inline-block;
   align-items: center;
   text-align: center;
   position: fixed;
-  top: 5%;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  height: 90%;
+  transform: translateX(-50%) translateY(-50%);
   z-index: 1;
   border-style: solid;
   border-width: 3px;
   border-radius: 5px;
   background-color: #fff;
+  max-width: 1000px;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(206, 255, 206);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
+
+#abrir {
+  margin: 5px 15px;
+}
+
+.container-abrir {
+  background-color: rgb(225, 255, 225);
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 50px;
+}
+
+
+
+.blocks {
+  display: grid;
+  width: 360px;
+  grid-template-columns: 50% 50%;
+}
+
+.janela {
+  /*janela do qrcode */
+  display: inline-block;
+  align-items: center;
+  text-align: center;
+  word-break: break-all;
+  position: fixed;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 400px;
+  width: 90%;
+  height: 90%;
+  z-index: 5;
+  border-style: solid;
+  border-width: 3px;
+  border-radius: 5px;
+  background-color: #ebfffcfe;
+}
+
 .line {
   display: grid;
 }
@@ -136,13 +222,20 @@ body {
   transition: opacity 0.5s;
   transition-delay: 1s;
 }
-.ade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+
+.ade-enter,
+.fade-leave-to
+
+/* .fade-leave-active below version 2.1.8 */
+  {
   opacity: 0;
   transition-delay: 1s;
 }
+
 .label {
   padding-top: 10px;
 }
+
 .login a {
   color: #ffffff;
 }
@@ -158,6 +251,7 @@ body {
   border-width: 1px;
   background-color: #ffffff;
 }
+
 .div-table-array-line:hover {
   background-color: rgba(144, 238, 144, 0.26);
 }
@@ -166,19 +260,35 @@ body {
 :root {
   --width-small: auto;
   --border-div-table: rgb(231, 231, 231);
-  --background-div-table-head: rgba(0, 209, 178, 0.116);
+  --background-div-table-head: rgb(241, 255, 253);
 }
+
 .table-grid-container {
   display: flex;
   align-content: center;
   align-items: center;
 }
+
 .table-around {
   border-radius: 3px;
   width: calc(100% - 5px);
   box-shadow: 1px 1px 6px gray;
   margin: 15px 0px;
 }
+
+.cinza {
+  background-color: rgb(246, 246, 246);
+  color: lightgray
+}
+
+.bgCinza {
+  background-color: rgb(240, 240, 240);
+}
+
+.alerta {
+  color: red;
+}
+
 .first-line {
   font-size: 1.5 rem;
   height: 44px;
@@ -193,6 +303,7 @@ body {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+
 .last-line {
   display: grid;
   width: var(--width-small);
@@ -205,6 +316,7 @@ body {
   border-bottom-right-radius: 3px;
   background-color: var(--background-div-table-head);
 }
+
 .div-table-line {
   display: grid;
   padding-top: 2px;
@@ -213,15 +325,19 @@ body {
   border-bottom-style: solid;
   border-width: 1px;
   border-color: var(--border-div-table);
-  background-color: #ffffffe1;
+
 }
 
 #visita {
-  grid-template-columns: 65% 0% 35%;
+  /* grid-template-columns: 65% 0% 35%; */
+  grid-template-columns: 46% 0% 26% 28%;
+
 }
+
 #registro {
   grid-template-columns: 30% 40% 30%;
 }
+
 .transp {
   color: rgba(27, 27, 27, 0);
 }
@@ -233,6 +349,7 @@ body {
 }
 
 @media screen and (min-width: 600px) {
+
   /* para desktop */
   .first-line,
   .last-line,
@@ -241,27 +358,43 @@ body {
   #registro {
     width: auto;
   }
+
   .first-line {
     grid-template-columns: 250px 150px 200px;
   }
+
   .div-table-line {
     grid-template-columns: 250px 150px 200px;
   }
+
   #visita {
-    grid-template-columns: 50% 20% 30%;
+    grid-template-columns: 40% 15% 15% 30%;
   }
+
   #registro {
     grid-template-columns: 20% 30% 15% 20% 15%;
   }
-  .transp {
+
+  /* .transp {
     color: rgb(49, 49, 49);
-  }
+  } */
+
   .navigation {
     text-align: left;
   }
+
   .bloco {
     margin: auto;
     max-width: 660px;
+  }
+
+  .bloco-centro {
+    margin: auto;
+    max-width: 660px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
   }
 }
 
@@ -278,14 +411,17 @@ body {
   z-index: 1;
   animation: showing 0.4s;
 }
+
 @keyframes showing {
   0% {
     transform: scale(0.1);
   }
+
   100% {
     transform: scale(1);
   }
 }
+
 .spin {
   position: absolute;
   background: rgba(64, 224, 208, 0.6);
@@ -296,11 +432,13 @@ body {
   border-top: 7px solid turquoise;
   animation: loading 2s linear infinite;
 }
+
 @keyframes loading {
   100% {
     transform: rotate(360deg);
   }
 }
+
 .spinout {
   position: absolute;
   background: radial-gradient(rgba(64, 224, 208, 0.2) 30%, rgba(64, 224, 208, 0) 80%);
@@ -308,11 +446,13 @@ body {
   width: 200px;
   border-radius: 150vh;
 }
+
 .loading {
   position: absolute;
   color: #267e75;
   font-family: sans-serif;
 }
+
 .notif-line-cel {
   min-width: 200px;
 }
@@ -322,7 +462,8 @@ body {
   position: absolute;
   visibility: hidden;
 }
-.switch + label {
+
+.switch+label {
   display: block;
   position: relative;
   cursor: pointer;
@@ -330,16 +471,20 @@ body {
   user-select: none;
   height: 20px;
 }
-.switch--shadow + label {
+
+.switch--shadow+label {
   padding: 5px;
-  width: 40px; /* largura do botao*/
-  height: 20px; /* altura do botao*/
+  width: 40px;
+  /* largura do botao*/
+  height: 20px;
+  /* altura do botao*/
   background-color: #dddddd;
   border-radius: 50px;
 }
+
 /* Posição da Bolinha do botão */
-.switch--shadow + label:before,
-.switch--shadow + label:after {
+.switch--shadow+label:before,
+.switch--shadow+label:after {
   display: block;
   position: absolute;
   top: 1px;
@@ -347,8 +492,9 @@ body {
   bottom: 1px;
   content: "";
 }
+
 /* Através do before desenha-se o fundo do label */
-.switch--shadow + label:before {
+.switch--shadow+label:before {
   right: 1px;
   background-color: #ffe3ae;
   border-radius: 20px;
@@ -357,21 +503,24 @@ body {
   padding-top: 5px;
   content: "";
 }
+
 /* Através do after desenha-se a bolinha do botão */
-.switch--shadow + label:after {
+.switch--shadow+label:after {
   width: 18px;
   background-color: #fff;
   border-radius: 100%;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   transition: all 0.4s;
 }
+
 /* Liga - Desliga é feito através do checked*/
-.switch--shadow:checked + label:before {
+.switch--shadow:checked+label:before {
   background-color: #8ce196;
   padding-top: 1px;
   padding-left: 1px;
   content: "";
 }
-.switch--shadow:checked + label:after {
+
+.switch--shadow:checked+label:after {
   transform: translateX(19px);
 }

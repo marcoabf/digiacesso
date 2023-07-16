@@ -48,11 +48,11 @@ export default {
   <label v-show="!edit" @click="editMode()"> {{ field }} </label>
   <input v-show="edit" :value="field" @keyup.enter="saveMode()" @keyup.esc="cancelMode()" @input="$emit('input', $event.target.value)" style="width: 150px;" > 
   <a @click="editMode()" v-show="!edit"> 
-    <span class="icon is-small is-left has-text-success">
+    <span class="icon is-small is-left has-text-grey-lighter">
       &nbsp;&nbsp;&nbsp;  <i class="fas fa-edit"></i>
     </span> 
   </a>
-  &nbsp; <a class="has-text-success" @click="saveMode()" v-show="edit" style="padding: 5px;"> &#10004; </a>
+  &nbsp; <a class="has-text-gray" @click="saveMode()" v-show="edit" style="padding: 5px;"> &#10004; </a>
   &nbsp;
   <a class="has-text-danger" @click="cancelMode()" v-show="edit" style="padding: 5px;">&#10006;</a>
   </div>

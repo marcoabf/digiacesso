@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>iACESSO</title>
+    <link rel="stylesheet" href="./node_modules/bulma/css/bulma.min.css"> 
+    <link rel="stylesheet" href="./node_modules/bulma-slider/dist/css/bulma-slider.min.css"> 
+    <link rel="stylesheet" href="./css/style.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  </head>
+  <!-- Iniciando -->
+  <body>
+
+    <div id="app">
+      <section class="hero is-primary" style="background-image: linear-gradient(#008040, #00cc66);">
+        <div class="header" id="cabecalho">
+          <div class="bloco">
+            <h1 class="title is-family-code"> _iACESSO </h1>
+            <h2 class="subtitle is-family-code"> Acesso simples e seguro! </h2>
+            
+          </div>
+        </div>
+      </section>
+      <section class="section"> <!--Starting Section-->
+        <div class="bloco-centro">
+          <div class="field">
+            <p style="padding: 15px 0">
+              <h1 class="title is-5"> Condomínio: {{guest.condoName}}</h1>
+              <div class="control">
+
+                <div><label class="label">Visitante:</label>{{guest.name }}</div> 
+       
+                <div><label class="label">Horário de acesso:</label>{{guest.perm  | permissao}}</div> 
+                
+              </div>
+            <div class="portas">
+              <div class="field">
+                <label class="label">Portas de acesso:</label>
+                <div class="select">
+                  <select v-model="doorSelected">
+                    <option selected :value="0">Selecione a porta de acesso</option>
+                    <option v-for="porta in ctrl" :value="porta.ctrlid">{{ porta.ctrlname }}</option>
+                  </select>
+                </div> 
+                <div class="control">
+                  <button class="button is-link" @click="loadQrcode">Ver QrCode</button>
+                </div>
+                <h1 class=" is-6 ">Com o Qrcode na tela, posicione o celular a aproximadamente 20cm (1 palmo) do leitor por aproximadamente <strong> 5 segundos</strong>. </h1>
+                <br><br>Veja o exemplo da imagem abaixo:
+                <img src="./img/lendoqr.png" alt="Como utilizar">
+                <br><br>
+              </div>
+            </div>
+            <!-- Janela de Informações do iACESSO -->
+            <div class="janela" v-if="see.about" style="background-image: linear-gradient(#fff, #fff, green);">
+              <div class='has-text-right' style="margin: 20px;" >  <span class="icon is-small is-right"> <a @click="seeOne('loginPage')"><i class="fas fa-window-close fa-2x has-text-danger" title="Fechar"></i></a>&nbsp; </span> </div>
+              <div class="container" style="padding: 20px; padding-top: 50px;">
+                <h1 class="subtitle">iACESSO</h1>
+                <span>
+                  iACESSO é uma plataforma de controle de acesso para condomínios residenciais e comerciais.
+                  Todo o sistema, envolvendo equipamentos e acesso à plataforma, pode ser contratado pela AC Control <a href="http://www.accontrol.com.br">www.accontrol.com.br</a>.
+                </span>
+              </div>
+            </div>
+          </div>
+      </section>
+      <div class="janela" v-show="see.loadingPage">  <!-- Página para bloquear outras janelas enquanto estiver carregando  -->
+        <p> &nbsp; <p> &nbsp; <p> &nbsp; <p> &nbsp; <p> &nbsp;
+        <h1 class="title is-family-code"> _iACESSO </h1>
+        <p> &nbsp; <p> &nbsp;
+        <strong class="has-text-danger is-family-code"> Carregando...</strong>
+      </div>
+      <div id="qrguest"> <div class="janela" v-show="see.qrGuest"><!-- QR CODE do visitante-->
+        <div class='has-text-right'> <a @click="see.qrGuest = false"><i class="fas fa-window-close fa-2x has-text-danger" title="Fechar QrCode"></i></a>&nbsp;</div>
+        <br><strong> QRcode gerado.</strong>
+        <span class="icon has-text-info">
+        </span><br>
+        <br><canvas id="canvas"></canvas>
+        <div class="linkQR"> Posicione a imagem de frente para o leitor por 5 segundos<br>&nbsp</div>
+      </div></div>
+    <footer style="background-image: linear-gradient(#00cc66, #008040); padding: 20px 0; background-color: rgb(193, 255, 193)">
+      <div class="content has-text-centered">
+        <div class = "has-text-centered"> 
+          <span class="icon is-large is-left has-text-sucess" style="font-size: 2em;">
+            <i class="fas fa-info-circle"></i>
+          </span><br>
+          <a @click="seeOne('about')"> Sobre o iACESSO </a> 
+        </div>
+      </div>
+    </footer>
+  </div> <!--Fim APP--> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+    <!-- <script src="/node_modules/vue/dist/vue.js"></script>  -->
+    <script src="./dist/guest.js"></script>
+  </body>
+</html>

@@ -1,9 +1,10 @@
-const path = require("path");
+//const path = require("path");
 
 module.exports = {
   entry: {
     user: "./public/src/vue.js",
     config: "./public/src/vueAdmin.js",
+    guest: "./public/src/vueGuest.js",
   },
   output: {
     libraryTarget: "umd",
@@ -17,4 +18,7 @@ module.exports = {
       vue$: "vue/dist/vue.esm.js", // 'vue.common.js' para webpack 1
     },
   },
+  // node: {
+  //   fs: "empty"
+  // }
 };

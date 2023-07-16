@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html  lang="pt-BR">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>digiACESSO</title>
+    <title>iACESSO</title>
     <link rel="stylesheet" href="./node_modules/bulma/css/bulma.min.css"> 
     <link rel="stylesheet" href="./node_modules/bulma-slider/dist/css/bulma-slider.min.css"> 
     <link rel="stylesheet" href="./css/style.css">
@@ -16,14 +16,17 @@
       <section class="hero is-primary" style="background-image: linear-gradient(#008040, #00cc66);">
         <div class="header" id="cabecalho">
           <div class="bloco">
-            <h1 class="title is-family-code"> _digiACESSO </h1>
+            <h1 class="title is-family-code"> _iACESSO </h1>
             <h2 class="subtitle is-family-code"> Acesso simples e seguro! </h2>
             <div style="display:flex; flex-direction: row; justify-content: space-between; ">
-              <div class='login'>
-                <span > Menu </span>
+              <div class='login' v-show="showbtn" >
+                <span > <i class="fas fa-bars"></i> Menu </span>
                   <div class='menu' >
                     <Ul>
-                      <li><a v-on:click='userPage()'>Usuário </a></li></li>
+                      <li><a v-on:click='userPage()'>Usuário </a></li>
+                      <li><a v-on:click='mountGuests()'>Visitas </a></li>
+                      <li><a v-on:click='regStart()'>Registros </a></li>
+                      <li><a v-on:click='openPage()'>Abrir </a></li>
                       <li>Mensagens</li>
                       <li><a v-on:click='doLogout()'>Sair </a></li>
                     </Ul>
@@ -46,7 +49,7 @@
               <button class="button is-medium" @click="openPage()" ><i class="fas fa-unlock"></i>&nbsp Abrir</button>
               <br>
             </div>  <!-- fim da start page-->
-            <div class="load" v-if="loading">
+            <div class="load" v-if="loading"> <!-- icone de carregamento-->
               <div class="spinout"></div>
               <div class="spin"></div>
               <div class="loading">Carregando</div>
@@ -61,28 +64,35 @@
               </div>
             </div> <!-- Div Login -->
             <!-- Janela de Solicitação de senha -->
-            <div class="janela" v-if="see.changePassword" style="background-image: linear-gradient(#fff, #fff, green);">
-              <div class='has-text-right' style="margin: 20px;" >  <span class="icon is-small is-right"> <a @click="seeOne('loginPage')"><i class="fas fa-window-close fa-2x has-text-danger" title="Fechar"></i></a>&nbsp; </span> </div>
+            <div class="janela" v-if="see.changePassword" style="background-image: linear-gradient(rgb(155, 244, 158), rgb(155, 244, 158), green); padding: 10px 10px; border: 2px solid green">
+              <div class='has-text-right' style="margin: 5px;" >  <span class="icon is-small is-right"> <a @click="seeOne('loginPage')"><i class="fas fa-window-close fa-2x" style="color:green;" title="Fechar"></i></a>&nbsp; </span> </div>
               <div class="container" style="border-left: 100px;"></div>
               <br><br><br><h1 class="title">Solicitação de nova senha</h1>
               <br><h1 class="subtitle">Insira seu e-mail para enviarmos o link mudança de senha:</h1>
               <br><input class="input" v-model="login.email" type="text" placeholder="E-mail" style="width: 400px;"></input>
-              <br><br></nr><button class="button is-success is-medium" @click="sendMailToNewPassword">Enviar</button>
+              <br><br></nr><button class="button is-warning is-medium" @click="sendMailToNewPassword">Enviar</button>
           </div>
-          <!-- Janela de Informações do digiACESSO -->
+          <!-- Janela de Informações do iACESSO -->
           <div class="janela" v-if="see.about" style="background-image: linear-gradient(#fff, #fff, green);">
             <div class='has-text-right' style="margin: 20px;" >  <span class="icon is-small is-right"> <a @click="seeOne('loginPage')"><i class="fas fa-window-close fa-2x has-text-danger" title="Fechar"></i></a>&nbsp; </span> </div>
             <div class="container" style="padding: 20px; padding-top: 50px;">
-              <h1 class="subtitle">digiACESSO</h1>
+              <h1 class="subtitle">iACESSO</h1>
               <span>
-                DigiACESSO é uma plataforma de controle de acesso para condomínios residenciais e comerciais.
+                iACESSO é uma plataforma de controle de acesso para condomínios residenciais e comerciais.
                 Todo o sistema, envolvendo equipamentos e acesso à plataforma, pode ser contratado pela AC Control <a href="http://www.accontrol.com.br">www.accontrol.com.br</a>.
               </span>
             </div>
           </div>
-            <div id="user" v-if="see.userPage"> <!-- --- user page -->
+            <div id="user" v-show="see.userPage"> <!-- --- user page -->
               <div class="table-container">
-                <h1 class="title">Seus dados:</h1>
+                <h1 class="title"></h1>
+                <div style="width:100%; display: flex; justify-content: center;" v-show="false">
+                  <div>
+                    <div id="user-photo"></div>
+                    <div id="add-photo" @click="$refs.fileInput.click();"> <i class="fas fa-exchange-alt"></i> </div>
+                    <input style="display: none;" ref="fileInput" type="file" accept=".jpg" @change="uploadUserPhoto()"/>
+                  </div>
+                </div>
                 <base-table title="Usuário:">  <field-edt tbl="users" f-name="username" :t-id="api.id" :field="api.username" v-model="api.username" unique="true"> </field-edt>  </base-table>
                 <base-table title="Tipo:">{{userType(api.type)}}</base-table>
                 <base-table title="Nome:"><field-edt tbl="users" f-name="firstname" :t-id="api.id" :field="api.firstname" v-model="api.firstname"></field-edt> </base-table>
@@ -114,8 +124,28 @@
                   <div style="padding-left: 20px;"> <a @click="nTelegramBtn=!nTelegramBtn"> {{nTelegramBtn?'Voltar':'Configurar'}} </a></div>
                 </div>
                 <div v-show="nTelegramBtn" style="padding-bottom: 20px;">
-                  <button class="button is-small is-danger" @click="TelegramCode()" >Gerar Código</button>
-                  <button class="button is-small is-danger" @click="sendTTest()" >Enviar teste</button>
+                  <button class="button is-small is-danger" @click="telegramCode()" >Gerar Código</button>
+                  <button class="button is-small is-danger" @click="sendTelegramTest()" >Enviar teste</button>
+                </div>
+                <div v-if="showTgmBox">
+                  <article class="message is-danger">
+                    <div class="message-header">
+                      <p>Instruções</p>
+                      <button class="delete" aria-label="delete" @click="showTgmBox=false"></button>
+                    </div>
+                    <div class="message-body">
+                      <ol>
+                        <li>Para habilitar o telegram, entre no aplicativo e pesquise por <strong>@control_acbot</strong>;</li>
+                        <li>Clique em no botão <strong>"Novo Código"</strong> (abaixo);</li>
+                        <li>Envie uma mensagem ao <strong>@control_acbot</strong> com o código gerado;</li>
+                        <li>Depois de enviar a mensagem clique em no botão <strong>"Atualizar Código"</strong>.</li>
+                      </ol>
+                      <button class="button is-small is-danger" @click="newTelegramCode()">Novo Código</button>
+                      <button class="button is-small is-danger" @click="telegramUpdate()">Atualizar Código</button><br>
+                      <label>Código: &nbsp;</label><input type="text" disabled v-model="telegramCodeVar">
+                    </div>
+                  </article>
+
                 </div>
                 <p> &nbsp </p>
                 <button class="button is-danger is-light" @click="see.passwordPage=true">Trocar Senha</button>
@@ -131,16 +161,12 @@
             </div> <!-- Div user -->
             <div id="guest" v-if="see.guestPage"> <!-- --- Guest Page -->
               <h1 class="title">Visitantes cadastrados:</h1>
-              <button class="button is-primary" v-on:click="see.addGuest=!see.addGuest" >Novo Cadastro</button>
+              <button class="button is-primary" v-on:click="see.addGuest=!see.addGuest" >Novo Visitante</button>
                 <div id="addguest" v-if="see.addGuest">
                   <div class = "field">
                     <label class="label">Nome</label>
                     <input class="input" type="text" placeholder="Nome da visita" v-model="guest.name">
-                    <label class="label">Quantidade de acessos:</label>
-                    <label class="radio"><input type="radio" name="life" value="0" v-model="guest.lifecount" checked> Acesso ilimitado</label><br>
-                    <label class="radio"><input type="radio" name="life" value="1" v-model="guest.lifecount"> Liberar apenas 1 acesso</label><br>
                     <div class="superButton">
-
                     </div>
                     <div id="permData"></div>
                     <div id="permSemana">
@@ -166,44 +192,51 @@
                   </div>
                   <button class="button is-primary" v-on:click="addGuest()" >Salvar</button><p>&nbsp</p>
                 </div>              
-                <div id="qrguest"> <div class="janela" v-show="see.qrGuest"><!-- QR CODE do visitante-->
-                  <div class='has-text-right'> <a @click="see.qrGuest = false"><i class="fas fa-window-close fa-2x has-text-danger" title="Fechar QrCode"></i></a>&nbsp;</div>
-                  <br><strong> QRcode gerado.</strong>
-                  <span class="icon has-text-info">
-                  </span><br>
-                  <br><canvas id="canvas"></canvas>
-                  <div class="linkQR"> <a id="link-qr-code" href="javascript:void(0)" @click="saveImage()">Salve a imagem </a> e envie para o visitante.<br>&nbsp</div>
-                </div></div>
+                <div class="field">
+                  <p class="control has-icons-left">
+                    <input class="input" v-model="buscaVisitantes" @input="buscar" type="text" placeholder="Digite e pressione ENTER">
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-search"></i>
+                    </span>
+                </div>
                 <div class="table-grid-container">
                   <div class="table-around">
-                    <div class="first-line guest" id="visita"><div class="table-c"> Nome </div><div class="table-c transp"> Criado em </div><div class="table-c">Permissão </div></div>
-                    <div class="grid div-table-line" id="visita" v-for="n in myguests" :key="n['dtcreated']">
-                    <div class="table-c">
+                    <div class="first-line guest" id="visita"><div class="table-c"> Nome </div><div class="table-c transp"> Criado em </div><div class="table-c">Expira em </div><div class="table-c">Permissão </div></div>
+                    <div class="grid div-table-line"  :class="{' bgCinza':!isUpToDate(n.dtchanged, 30)}" id="visita" v-for="n in myguestsResults" :key="n['dtcreated']">
+                    <div class="table-c" :class="{'cinza':n.type>9}">
                       {{n.firstname}} <br>
-                      <span class="icon"><a  @click="showQR(n.qrcode)" ><i class="fas fa-qrcode has-text-info" title="QrCode"></i></a></span> 
+                      <!-- <span class="icon"><a  @click="showQR(n.qrcode)" ><i class="fas fa-qrcode has-text-info" title="QrCode"></i></a></span>  -->
+                      <span class="icon"><a  @click="linkQR(n.qrcode)" ><i class="fas fa-link has-text-info" title="Copiar Link"></i></a></span> 
+                      <span class="icon"><a  @click="editGuest(n.id)" ><i class="fas fa-pen has-text-info" title="Editar"></i></a></span> 
+                      <span class="icon"><a  @click="renewGuest(n.id)" ><i class="fas fa-clock has-text-warning" title="Renovar Acesso"></i></a></span> 
                       <span class="icon"><a  @click="delGuest(n.qrcode)"><i class="fas fa-trash has-text-danger" title="Excluir usuário"></i></a></span>
                     </div>
-                    <div class="table-c transp"> {{n.dtcreated | date2br(0,'dt') }} </div><div class="table-c">{{n.perm | permissao}} </div></div>
+                    <div class="table-c transp" :class="{'cinza':n.type>9}"> {{n.dtcreated | date2br(0,'dt') }} </div>
+                    <div class="table-c " :class="{'alerta':!isUpToDate(n.dtchanged, 30)}" :class="{'cinza':n.type>9}"> {{n.dtchanged | days2date(30) }} </div>
+                    <div class="table-c" :class="{'cinza':n.type>9}">{{n.perm | permissao}} </div></div>
                     <div class="last-line">&nbsp</div>
                   </div>
                 </div>
               
             </div> <!-- Div guest -->
             <div id="opendoor" v-if="see.openDoorPage"> <!-- --- Open Door Page -->
-              <h1 class="title">Abertura remota de portas:</h1><br>
-              <div class="select">
-                <select id="controller" v-model="doorSelected">
-                  <option v-for="x in ctrl" :value="x.ctrlID" selected>{{x.ctrlName}}</option>
-                </select>
+              <h1 class="title">Abertura remota:</h1><br>
+              <div class="container-abrir">
+                <div class="select">
+                  <select id="controller" v-model="doorSelected">
+                    <option v-for="x in ctrl" :value="x.ctrlID" selected>{{x.ctrlName}}</option>
+                  </select>
+                </div>
+                <span><button id="abrir" class="button is-success is-small" @click="openDoor()" ><strong> ABRIR </strong></button></span>
+                <span style="display: none;"><button id="alarme" class="button is-warning is-small" @click="alarmOff()" ><strong> Desligar Alarme </strong></button></span>
+                <br>  <div style="padding-top: 15px;">Selecione a porta que deseje enviar o comando e aperte o botão.</div> <br>
+                <div><button id="qrdin" class="button is-warning is-small" @click="qrDinamico()" ><strong> Gerar QR Dinâmico </strong></button></div>
+                <!-- <div><button id="snap" class="button is-warning is-small" @click="snapshot()" ><strong> SnapShot </strong></button></div> -->
               </div>
-              <span><button id="abrir" class="button is-warning is-small" @click="openDoor()" ><strong> ABRIR </strong></button></span>
-              <span><button id="alarme" class="button is-warning is-small" @click="alarmOff()" ><strong> Desligar Alarme </strong></button></span>
-              <br>  <span>Selecione a porta que deseje enviar o comando e aperte o botão.</span><br>
-
-
+            
             </div>
             <div id="reg" v-if="see.regPage"> <!-- --- Register Page -->
-              <h1 class="title">Registros de entrada e saída:</h1>
+              <h1 class="title">Registros:</h1>
               <div class="radio-filter" v-if="api.type<3">
                 <div class="control">
                   <label class="radio">
@@ -216,35 +249,69 @@
                   </label>
                 </div>
               </div>
+              <div v-show="showCPhoto" id="camera-photo" >
+              <div class='has-text-right'> <a @click="showCPhoto = false"><i class="fas fa-window-close fa-2x has-text-success" title="Fechar QrCode"></i></a>&nbsp;</div>
+              </div>
               <div class="table-grid-container">
                 <div class="table-around">
-                    <div class="first-line" id="registro"><div class="table-c"> Data </div><div class="table-c"> Nome </div><div class="table-c">Situação </div><div class="table-c transp">Responsável </div><div class="table-c transp">Unidade </div></div>
-                    <div class="grid div-table-line" id="registro" v-for="n in access" :key="n['date-time']" :style="(n.stateBR=='Liberado')?{color:'darkgreen'}:{color:'red', 'background-color':'rgb(255, 235, 235)'}"><div class="table-c"> {{n.dtBR}} </div><div class="table-c"> {{n.firstname}} </div><div class="table-c">{{n.stateBR}} </div><div class="table-c transp">{{n.rName}} </div><div class="table-c" transp>{{n.unit}} </div></div>
+                    <div class="first-line" id="registro"><div class="table-c"> Data </div><div class="table-c"> Nome </div><div class="table-c">Situação </div><div class="table-c transp">Responsável </div><div class="table-c transp">Local </div></div>
+                    <div class="grid div-table-line" id="registro" v-for="n in access" :key="n['date-time']" :style="(n.stateBR=='Liberado')?{color:'darkgreen'}:{color:'red', 'background-color':'rgb(255, 235, 235)'}"><div class="table-c"> {{n.dtBR}} </div><div class="table-c"> {{n.firstname}}<br><span style="font-weight: 300;"> {{n.unit}}</span> </div>
+                    <div class="table-c">{{n.stateBR}}
+                      <span class="icon" v-if="n.cam"><a  @click="showIMG(n.datetime, n.controllerid)" ><i class="far fa-image has-text-info" title="Imagem"></i></a></span>
+                    </div><div class="table-c transp">{{n.rName}} </div><div class="table-c transp">{{n.porta}} 
+                    </div></div>
                     <div class="last-line"><a @click="regStart()"><i class="fas fa-angle-down fa-2x has-text-success"></i></a> &nbsp</div>
                 </div>
               </div>
             </div>
+            <div id="qrguest" class="janela"  v-show="see.qrGuest"> 
+              <article class="message is-primary"><!-- QR CODE do visitante-->
+                <div class="message-header">
+                  <p>QRCode para acesso</p>
+                  <button class="delete" aria-label="delete" @click="see.qrGuest = false"></button>
+                </div>
+                <div class="message-body">
+                  <br><strong> QRcode gerado.</strong>
+                  <span class="icon has-text-info">
+                  </span><br>
+                  <br><canvas id="canvas"></canvas>
+                  <div class="linkQR"> <a id="link-qr-code" href="javascript:void(0)" @click="saveImage()">Salve a imagem </a> e envie para o visitante.<br>&nbsp</div>
+                </div>
+              </article>
+            </div>
+            <div id="qrlink" class="janela" v-if="see.qrLink">
+              <article class="message is-primary">
+                <div class="message-header">
+                  <p>Compartilhar link de acesso</p>
+                  <button class="delete" aria-label="delete" @click="see.qrLink=false"></button>
+                </div>
+                <div class="message-body" style="text-align:left;">
+                  Copie o <strong>link de acesso</strong> e envie ao visitante. Com o link é possível utilizar o QrCode para acessar o Local.
+                  <br> <br>
+                  <strong>Link:</strong> <br> {{linkParaQr}} 
+                </div>
+                <button class="button is-success" @click="copyQrLink()">Copiar</button>
+              </article>
+            </div>
           </div> <!-- Div container -->
 
       </section>
-      <div class="janela" v-show="see.loadingPage">  <!-- Página para bloquear outras janelas enquanto estiver carregando  -->
+      <div class="janela" v-show="see.loadingPage">  <!-- Página para bloquear outras janelas enquanto estiver  -->
         <p> &nbsp; <p> &nbsp; <p> &nbsp; <p> &nbsp; <p> &nbsp;
-        <h1 class="title is-family-code"> _digiACESSO </h1>
+        <h1 class="title is-family-code"> _iACESSO </h1>
         <p> &nbsp; <p> &nbsp;
         <strong class="has-text-danger is-family-code"> Carregando...</strong>
       </div>
-    <footer class="footer">
+    <footer class="footer" style="color: black; margin-top: 100px;">
       <div class="content has-text-centered">
         <div class = "has-text-centered"> 
           <span class="icon is-large is-left has-text-info" style="font-size: 2em;">
             <i class="fas fa-info-circle"></i>
           </span><br>
-          <a @click="seeOne('about')"> Sobre o digiACESSO </a> 
+          <a  @click="seeOne('about')" style="color:gray "> Sobre o iACESSO </a> 
           <br> &nbsp
         </div>
-        <p>
-          Entre em contato para criar um usuário.
-        </p>
+
       </div>
     </footer>
   </div> <!--Fim APP--> 

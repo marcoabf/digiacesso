@@ -1,0 +1,27 @@
+
+GET http://192.168.0.72/relay?state=on HTTP/1.1
+Authorization: Basic digiacesso:accontrol
+Date: {{$datetime rfc1123}}
+###
+
+
+POST http://192.168.0.208/sendconfig HTTP/1.1
+Authorization: Basic digiacesso:accontrol
+Content-Type: application/x-www-form-urlencoded
+
+noFormat=true
+&acTempo=2000
+&mqttServer=broker.hivemq.com
+&mqttPort=1883
+&mqttTopic=iacesso
+&httpUrl=http://192.168.0.48
+&httpUri=/utech
+&ssid_c=CLARO_2G8A26DC
+&pass_c=708A26DC
+&ap=false
+//&checkQR=false
+###
+
+GET http://192.168.0.72/qroff HTTP/1.1
+Authorization: Basic accontrol:digiacesso
+Content-Type: application/x-www-form-urlencoded

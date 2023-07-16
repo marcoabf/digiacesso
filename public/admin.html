@@ -28,9 +28,9 @@
         <!--Starting Section-->
 
         <div class="container">
-          <button @click="getTelegramUpdates">Update</button>
+          <!-- <button @click="getTelegramUpdates">Update</button>
           <button @click="sendTelegramMsg">Send</button>
-          <button @click="setTelegraWebHook">webhook</button>
+          <button @click="setTelegraWebHook">webhook</button> -->
 
           <div id="startPage" v-if="showbtn">
             <button class="button is-medium" @click="seeOne('userPage')"><i class="fas fa-user"></i>&nbsp Usuário</button>
@@ -136,7 +136,7 @@
                 </ul>
               </nav>
               <div class="units" v-show="!see.equipNav">
-                <a @click="see.newUser=!see.newUser" style="margin 10px 0;">Novo Usuário</a>
+                <a @click="see.newUser=!see.newUser" style="margin: 10px 0;">Novo Usuário</a>
                 <div class="new-user" v-show="see.newUser">
                   <div style="margin: 20px 0">
                     Unidade:
@@ -230,7 +230,6 @@
                   <!-- Controladoras -->
                   <strong class="is-uppercase">{{ctrl.name}}</strong>
                   <br />
-                  {{ctrl.brand}} {{ctrl.model}} <br />
                   <base-table title="Nome:">
                     <field-edt tbl="controllers" f-name="name" :t-id="ctrl.id" :field="ctrl.name" v-model="ctrl.name"></field-edt>
                   </base-table>
@@ -252,6 +251,24 @@
                   <base-table title="Porta:">
                     <field-edt tbl="controllers" f-name="port" :t-id="ctrl.id" :field="ctrl.port" v-model="ctrl.port"></field-edt>
                   </base-table>
+                  <base-table title="Criptografia (16):">
+                    <field-edt tbl="controllers" f-name="cipherkey" :t-id="ctrl.id" :field="ctrl.cipherkey" v-model="ctrl.cipherkey"></field-edt>
+                  </base-table>
+                  <base-table title="Opções:">
+                    <field-edt tbl="controllers" f-name="opt" :t-id="ctrl.id" :field="ctrl.opt" v-model="ctrl.opt"></field-edt>
+                  </base-table>
+                  <base-table title="Latitude:">
+                    <field-edt tbl="controllers" f-name="lat" :t-id="ctrl.id" :field="ctrl.lat" v-model="ctrl.lat"></field-edt>
+                  </base-table>
+                  <base-table title="Longitude:">
+                    <field-edt tbl="controllers" f-name="lon" :t-id="ctrl.id" :field="ctrl.lon" v-model="ctrl.lon"></field-edt>
+                  </base-table>
+                  <base-table title="Precisão Máxima:">
+                    <field-edt tbl="controllers" f-name="acc" :t-id="ctrl.id" :field="ctrl.acc" v-model="ctrl.acc"></field-edt>
+                  </base-table>
+                  <base-table title="Distância Máxima:">
+                    <field-edt tbl="controllers" f-name="dmax" :t-id="ctrl.id" :field="ctrl.dmax" v-model="ctrl.dmax"></field-edt>
+                  </base-table>
                   <base-table title="Usuário:">
                     <field-edt tbl="controllers" f-name="user" :t-id="ctrl.id" :field="ctrl.user" v-model="ctrl.user"></field-edt>
                   </base-table>
@@ -264,6 +281,7 @@
                       v-model="ctrl.password"
                     ></field-edt>
                   </base-table>
+                  <br /><br />  
                 </div>
                 <br />
                 <button class="button is-success">Nova Controladora</button>

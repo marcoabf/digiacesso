@@ -1,6 +1,6 @@
 
-//axios.defaults.baseURL = 'http://localhost:3000';
-axios.defaults.baseURL = "https://digiacesso.net/";
+axios.defaults.baseURL = 'http://localhost:3000';
+//axios.defaults.baseURL = "https://digiacesso.net/";
 axios.defaults.withCredentials = true;
 
 var app = new Vue({
